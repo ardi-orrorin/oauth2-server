@@ -5,13 +5,27 @@ import com.ardi.oauth2.dto.request.UserRequest
 import com.ardi.oauth2.service.UserService
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
-@RestController
-@RequestMapping("/api/users")
+@Controller
 class UserController(
     val userService: UserService
 ) {
+    @GetMapping("/")
+    fun index(): String {
+        return "index"
+    }
+
+    @GetMapping("/success")
+    fun loginSuccess(): String {
+        return "success"
+    }
+
+    @GetMapping("/login")
+    fun login(): String {
+        return "login"
+    }
 
     @PostMapping("/signup")
     suspend fun signup(

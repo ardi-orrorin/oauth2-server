@@ -13,6 +13,7 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -27,7 +28,6 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
@@ -41,13 +41,17 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.Duration
 import java.util.*
+import java.util.function.Supplier
 
 
 @Configuration
@@ -92,22 +96,23 @@ class AuthorizationServerConfig {
         http: HttpSecurity,
     ): SecurityFilterChain? {
 
-        http.csrf{ it.disable() }
-
         http.authorizeHttpRequests {
-            it.requestMatchers("/login","/oauth2/**").permitAll()
+            it.requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
             it.anyRequest().authenticated()
         }
-        http.formLogin{
-            it.defaultSuccessUrl("/", true)
+        .formLogin {
+            it.loginPage("/login")
         }
+
+        http.csrf(withDefaults())
+            .cors { corsConfigurationSource() }
         return http.build()
     }
-
 
     @Bean
     fun registeredClientRepository(): RegisteredClientRepository {
         val registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientName("ardi")
             .clientId("oidc-client")
             .clientSecret(BCryptPasswordEncoder().encode("oidc-secret"))
             .clientAuthenticationMethods {
@@ -118,7 +123,7 @@ class AuthorizationServerConfig {
                 it.add(AuthorizationGrantType.REFRESH_TOKEN)
             }
             .redirectUris {
-                it.add("http://localhost:3000")
+                it.add("http://localhost:3000/api/auth/callback/ardi")
             }
             .scopes {
                 it.add(OidcScopes.OPENID)
@@ -137,7 +142,7 @@ class AuthorizationServerConfig {
     fun oAuth2TokenCustomizer(userinfoService: OidcUserService): OAuth2TokenCustomizer<JwtEncodingContext> {
         return OAuth2TokenCustomizer { context ->
 
-            if(OAuth2TokenType.ACCESS_TOKEN.value != context.tokenType.value) return@OAuth2TokenCustomizer
+//            if(OAuth2TokenType.ACCESS_TOKEN.value != context.tokenType.value) return@OAuth2TokenCustomizer
 
             val authentication = context.getPrincipal() as Authentication
             val principal =  authentication.principal as UserDetailsDto
@@ -149,6 +154,28 @@ class AuthorizationServerConfig {
         }
     }
 
+    @Bean
+    fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+
+        config.allowedOrigins = listOf(
+            "http://192.168.0.49:3000",
+            "http://localhost:3000"
+        )
+        config.allowedMethods = listOf(
+            "GET",
+            "POST",
+        )
+        config.allowedHeaders = listOf(
+            "Authorization",
+            "Content-Type",
+        )
+        config.allowCredentials = true
+        config.maxAge = 3600L
+        source.registerCorsConfiguration("/**", config)
+        return source
+    }
 
     @Bean
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
@@ -179,7 +206,7 @@ class AuthorizationServerConfig {
     @Bean
     fun tokenSettings(): TokenSettings {
         return TokenSettings.builder()
-            .accessTokenTimeToLive(Duration.ofMinutes(30))
+            .accessTokenTimeToLive(Duration.ofDays(1))
             .build()
     }
 

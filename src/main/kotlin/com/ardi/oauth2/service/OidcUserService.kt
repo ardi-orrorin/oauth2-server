@@ -15,9 +15,10 @@ class OidcUserService(
         val user = usersRepository.findByUserId(username) ?: throw Exception("User not found")
 
         val props = mutableMapOf<String, String?>(
-            "sub" to user.userId,
-            "email" to user.email,
-            "profile" to user.profileImage,
+            "sub"      to user.id.toString().padStart(15, '0'),
+            "username" to user.userId,
+            "email"    to user.email,
+            "profile"  to user.profileImage,
         )
 
         scopes.forEach {
@@ -31,6 +32,8 @@ class OidcUserService(
                 }
             }
         }
+
+        println("props: $props")
 
         return OidcUserInfo(props.toMap())
     }

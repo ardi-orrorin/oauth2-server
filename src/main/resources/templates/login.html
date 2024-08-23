@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ardi OAuth2 Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-w-full min-h-screen flex justify-center items-center">
+  <div class="p-3 flex gap-2 min-w-[900px] max-w-[900px] min-h-[500px] max-h-[500px] bg-white border border-gray-100 border-solid rounded shadow-md">
+    <div class="pr-2 min-w-[400px] max-w-[400px] border-r border-gray-200 border-solid">
+      <img src="https://picsum.photos/400/600"
+           alt="image"
+           class="w-full h-full object-cover rounded-md"
+      />
+    </div>
+    <div class="w-full flex items-center">
+      <form th:action="@{/login}"
+            method="post"
+            class="w-full h-auto flex flex-col gap-2 items-center justify-center"
+      >
+        <h2 class="text-xl font-bold tracking-widest">로그인</h2>
+        <div class="w-[80%] h-[300px] flex flex-col gap-4 justify-center">
+          <div class="w-full text-xs">
+            <input name="username"
+                   placeholder="ID를 입력하세요."
+                   class="w-full p-2 rounded outline-0 border border-gray-200 border-solid focus:border-gray-700 duration-300"
+                   autofocus
+            />
+          </span>
+          </div>
+          <div class="w-full text-xs">
+            <input name="password"
+                   placeholder="비밀번호를 입력하세요"
+                   class="w-full p-2 rounded outline-0 border border-gray-200 border-solid focus:border-gray-700 duration-300"
+                   type="password"
+            />
+          </div>
+          <div th:if="${param.error}">
+              <span class="text-xs text-red-500">아이디 또는 비밀번호가 일치하지 않습니다.</span>
+          </div>
+          <button type="submit"
+                  class="w-full text-sm border border-gray-200 border-solid rounded p-2 bg-gray-300 hover:bg-gray-700 duration-500 text-white"
+          >
+            로그인
+          </button>
+        </div>
+
+
+      </form>
+    </div>
+  </div>
+</body>
