@@ -13,7 +13,6 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -41,7 +40,6 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
@@ -51,7 +49,6 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.Duration
 import java.util.*
-import java.util.function.Supplier
 
 
 @Configuration
@@ -97,8 +94,10 @@ class AuthorizationServerConfig {
     ): SecurityFilterChain? {
 
         http.authorizeHttpRequests {
-            it.requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
-            it.anyRequest().authenticated()
+            it.requestMatchers("/login**", "/error", "/logout").permitAll()
+            it.requestMatchers("/" ).authenticated()
+            it.anyRequest().hasRole("ADMIN")
+
         }
         .formLogin {
             it.loginPage("/login")

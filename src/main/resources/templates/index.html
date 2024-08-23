@@ -1,10 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ardi OAuth2</title>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      body, html {
+          height: 100%;
+          font-family: 'Roboto', sans-serif;
+          background-color: #f8f8f8;
+          color: #333;
+          overflow: hidden;
+      }
+      .container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+      }
+      .main-text {
+          font-size: 15vw;
+          font-weight: 300;
+          letter-spacing: 4vw;
+          z-index: 2;
+          position: relative;
+      }
+      .main-text-smail {
+          font-weight: 300;
+          letter-spacing: 1.5vw;
+          z-index: 2;
+          position: relative;
+      }
+      .main-text-smail2 {
+          margin-top: 2vw;
+          font-weight: 300;
+          letter-spacing: 1vw;
+          z-index: 2;
+          position: relative;
+      }
+      .geometric-shapes {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+      }
+      .shape {
+          position: absolute;
+          border: 1px solid #ddd;
+          transition: all 0.5s ease;
+      }
+      .shape-1 { width: 20vw; height: 20vw; transform: rotate(45deg); top: 10%; left: 20%; }
+      .shape-2 { width: 15vw; height: 25vw; bottom: 15%; right: 25%; }
+      .shape-3 { width: 18vw; height: 18vw; transform: rotate(30deg); bottom: 10%; left: 15%; }
+      .shape-4 { width: 10vw; height: 10vw; border-radius: 50%; top: 20%; right: 10%; }
+      .shape-5 { width: 12vw; height: 12vw; transform: rotate(60deg); top: 50%; left: 5%; }
+      .shape-6 { width: 8vw; height: 8vw; border-radius: 50%; bottom: 5%; left: 50%; }
+      .shape-7 { width: 22vw; height: 6vw; transform: rotate(15deg); top: 40%; right: 15%; }
+      .shape-8 { width: 5vw; height: 20vw; top: 30%; left: 40%; }
+      .floating-dots {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+      }
+      .dot {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background-color: #333;
+          border-radius: 50%;
+          opacity: 0.2;
+      }
+      .menu-icon {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          cursor: pointer;
+          z-index: 3;
+          font-size: 24px;
+      }
+      .nav-menu {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          z-index: 3;
+      }
+      .nav-menu a {
+          text-decoration: none;
+          color: #333;
+          margin-left: 20px;
+          font-size: 14px;
+      }
+      .social-icons {
+          position: absolute;
+          bottom: 20px;
+          left: 20px;
+          z-index: 3;
+      }
+      .social-icons a {
+          color: #333;
+          text-decoration: none;
+          margin-right: 15px;
+          font-size: 14px;
+      }
+
+      @media (max-width: 768px) {
+          .main-text { font-size: 20vw; }
+          .main-text-smail { font-size: 3vw; }
+          .main-text-smail2 { font-size: 2vw; }
+          .shape-4, .shape-5, .shape-7 { display: none; }
+          .shape-1, .shape-2, .shape-3 { width: 30vw; height: 30vw; }
+          .nav-menu {
+              top: auto;
+              bottom: 20px;
+              right: 20px;
+          }
+          .nav-menu a {
+              display: block;
+              margin: 10px 0;
+          }
+      }
+
+      @media (max-width: 480px) {
+          .main-text { font-size: 25vw; }
+          .main-text-smail { font-size: 8vw; }
+          .main-text-smail2 { font-size: 8vw; }
+          .geometric-shapes { opacity: 0.5; }
+          .shape-6, .shape-8 { display: none; }
+          .menu-icon, .nav-menu, .social-icons { font-size: 12px; }
+      }
+  </style>
 </head>
 <body>
+<div class="container">
+  <h1 class="main-text">ARDI</h1>
+  <h3 class="main-text-smail">OAUTH2 SERVER</h3>
+  <h3 class="main-text-smail2">PROJECT</h3>
+  <div class="geometric-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+    <div class="shape shape-6"></div>
+    <div class="shape shape-7"></div>
+    <div class="shape shape-8"></div>
+  </div>
+  <div class="floating-dots"></div>
+  <div class="social-icons">
+    <a href="https://github.com/ardi-orrorin" title="Github">GITHUB</a>
+    <a href="https://anamensis.site" title="Anamensis">ANAMENSIS</a>
+  </div>
+</div>
+<script>
+  const shapes = document.querySelectorAll('.shape');
+  shapes.forEach(shape => {
+    setInterval(() => {
+      const randomRotation = Math.random() * 360;
+      const randomScale = 0.8 + Math.random() * 0.4;
+      shape.style.transform = `rotate(${randomRotation}deg) scale(${randomScale})`;
+    }, 5000 + Math.random() * 5000);
+  });
 
+  const dotsContainer = document.querySelector('.floating-dots');
+  for (let i = 0; i < 50; i++) {
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    dot.style.left = `${Math.random() * 100}%`;
+    dot.style.top = `${Math.random() * 100}%`;
+    dot.style.animationDuration = `${10 + Math.random() * 20}s`;
+    dot.style.animationDelay = `${Math.random() * 5}s`;
+    dotsContainer.appendChild(dot);
+  }
+</script>
 </body>
 </html>
