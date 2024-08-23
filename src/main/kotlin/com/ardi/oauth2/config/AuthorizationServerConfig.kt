@@ -94,7 +94,7 @@ class AuthorizationServerConfig {
     ): SecurityFilterChain? {
 
         http.authorizeHttpRequests {
-            it.requestMatchers("/login**", "/error", "/logout").permitAll()
+            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**").permitAll()
             it.requestMatchers("/" ).authenticated()
             it.anyRequest().hasRole("ADMIN")
 

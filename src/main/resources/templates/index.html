@@ -112,6 +112,15 @@
           font-size: 14px;
       }
 
+      .copyright {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          font-size: 12px;
+          color: #999;
+          z-index: 3;
+      }
+
       @media (max-width: 768px) {
           .main-text { font-size: 20vw; }
           .main-text-smail { font-size: 3vw; }
@@ -127,6 +136,12 @@
               display: block;
               margin: 10px 0;
           }
+
+          .copyright {
+              bottom: 10px;
+              right: 10px;
+              font-size: 10px;
+          }
       }
 
       @media (max-width: 480px) {
@@ -141,6 +156,11 @@
 </head>
 <body>
 <div class="container">
+  <div class="menu-icon">☰</div>
+  <div class="nav-menu">
+    <a href="/signup">Sign Up</a>
+    <a href="/login">Login</a>
+  </div>
   <h1 class="main-text">ARDI</h1>
   <h3 class="main-text-smail">OAUTH2 SERVER</h3>
   <h3 class="main-text-smail2">PROJECT</h3>
@@ -159,6 +179,7 @@
     <a href="https://github.com/ardi-orrorin" title="Github">GITHUB</a>
     <a href="https://anamensis.site" title="Anamensis">ANAMENSIS</a>
   </div>
+  <div class="copyright">&copy; 2024 Ardi. All rights reserved.</div>
 </div>
 <script>
   const shapes = document.querySelectorAll('.shape');

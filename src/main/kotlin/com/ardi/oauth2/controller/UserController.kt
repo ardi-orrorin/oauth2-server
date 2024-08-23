@@ -17,24 +17,14 @@ class UserController(
         return "index"
     }
 
-    @GetMapping("/success")
-    fun loginSuccess(): String {
-        return "success"
-    }
-
     @GetMapping("/login")
     fun login(): String {
         return "login"
     }
 
-    @PostMapping("/signup")
-    suspend fun signup(
-        @RequestBody user: UserRequest.Signup
-    ): ResponseEntity<UsersDTO> = runBlocking {
-
-        val res = userService.save(user.toDto())
-
-        ResponseEntity.ok(res)
+    @GetMapping("/signup")
+    fun signup(): String {
+        return "signup"
     }
 
 }

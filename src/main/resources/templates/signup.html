@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>로그인</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
   <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
@@ -22,11 +22,13 @@
     </div>
     <div class="floating-dots">
     </div>
-    <form th:action="@{/login}" method="post" class="login-form">
-      <h1>로그인</h1>
+    <form th:action="@{/singup}" method="post" class="login-form">
+      <h1>회원가입</h1>
       <input type="text" name="username" placeholder="ID를 입력하세요." required autofocus>
       <input type="password" name="password" placeholder="비밀번호를 입력하세요" required>
-      <button type="submit">로그인</button>
+      <input type="password" name="password-confirm" placeholder="비밀번호를 다시 입력하세요" required>
+      <input type="text" name="email" placeholder="이메일를 입력하세요" required>
+      <button type="submit">가입</button>
       <p class="error-message" th:if="${param.error}">아이디 또는 비밀번호가 일치하지 않습니다.</p>
     </form>
     <div class="social-icons">
