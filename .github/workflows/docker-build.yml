@@ -1,0 +1,63 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - release/*
+env:
+  VERSION: $(echo ${{ github.ref_name }} | cut -f2 -d'/')
+
+jobs:
+  oauth-build:
+    runs-on : ubuntu-latest
+    steps:
+      - uses: docker/setup-buildx-action@v3.3.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+      - uses: docker/login-action@v3.2.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_KEY }}
+
+      - name: Build the Docker image
+        run : |
+          ./build.sh ${{ env.VERSION }} ${{ secrets.DOCKER_ID }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs  : oauth-build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ardi-orrorin/aws-anamensis
+          ref: main
+          token: ${{ secrets.ANAMENSIS_REPO_TOKEN }}
+
+      - name: Write SSH key
+        run : | 
+          echo "${{ secrets.ANAMENSIS_SSH_KEY }}" > anamensis.pem && chmod 600 anamensis.pem
+
+      - name: Insert Version to Docker Secret Version
+        run : |
+          sed "s|__TAG__|${{ env.VERSION }}|g" ./${{ env.SERVICE }}-docker-compose.yml > ./${{ env.SERVICE }}-docker-compose.temp && mv ${{ env.SERVICE }}-docker-compose.temp ${{ env.SERVICE }}-docker-compose.yml
+
+      - name: Copy Depoly Config
+        run : |
+          scp -o StrictHostKeyChecking=no -i anamensis.pem -r * ${{ secrets.AWS_EC2_INSTANCE }}:
+
+      - name: Docker deploy
+        run : |
+          ssh -o StrictHostKeyChecking=no -i anamensis.pem ${{ secrets.AWS_EC2_INSTANCE }} << 'EOF'
+          cd ./config
+          sudo ./${{ env.SERVICE }}-docker-secret.sh ${{ env.VERSION }}
+          cd ..
+          sudo ./deploy.sh ${{ env.SERVICE }} ${{ env.VERSION }} ${{ secrets.EC2_INSTANCE_PORT }} ${{ secrets.DOCKER_ID }}
+          rm -rf *
+          EOF
+
+      - name: Clean up
+        run : rm -rf *
