@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.ardi"
-version = "oauth2" +  project.properties["version"]
+version = project.properties["version"] ?: "0.0.1-SNAPSHOT"
 
 java {
     toolchain {

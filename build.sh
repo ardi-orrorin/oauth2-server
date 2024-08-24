@@ -5,7 +5,8 @@ echo
 
 version=$1
 docker_id=$2
-platform=linux/amd64,linux/arm64
+#platform=linux/amd64,linux/arm64
+platform=linux/amd64
 
 echo 'start oauth2 server project build start....'
 
@@ -13,7 +14,7 @@ echo 'start oauth2 server project build start....'
 
 echo 'start oauth2 server-anamensis project build success....'
 
-server_file_name='oauth2-server-'$version''
+server_file_name='oauth2-'$version''
 
 echo
 
@@ -31,7 +32,7 @@ echo
 
 echo 'oauth2-server-docker-compose build start....'
 
-docker buildx build --platform $platform --push --build-arg='JAR='$server_file_name -t $docker_id/oauth2-server-anamensis:$version -f oauth2.Dockerfile  .
+docker buildx build --platform $platform --push --build-arg='JAR='$server_file_name -t $docker_id/oauth2-server:$version -f oauth2.Dockerfile  .
 
 echo 'oauth2-server-docker-compose build success....'
 

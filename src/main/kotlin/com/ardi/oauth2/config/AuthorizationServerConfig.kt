@@ -116,8 +116,8 @@ class AuthorizationServerConfig {
     fun registeredClientRepository(): RegisteredClientRepository {
         val registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
             .clientName("ardi")
-            .clientId("oidc-client")
-            .clientSecret(BCryptPasswordEncoder().encode("oidc-secret"))
+            .clientId("oidc-client-ardi")
+            .clientSecret(BCryptPasswordEncoder().encode("oidc-secret-ardi"))
             .clientAuthenticationMethods {
                 it.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             }
