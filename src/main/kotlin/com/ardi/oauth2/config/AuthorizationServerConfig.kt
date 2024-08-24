@@ -101,6 +101,10 @@ class AuthorizationServerConfig {
         }
         .formLogin {
             it.loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/")
+                .failureUrl("/login?error")
+                .permitAll()
         }
 
         http.csrf(withDefaults())

@@ -25,6 +25,14 @@ final class UserService(
         return userDetails
     }
 
+    suspend fun existByUserId(userId: String): Boolean {
+        return usersRepository.existsByUserId(userId)
+    }
+
+    suspend fun existByEmail(email: String): Boolean {
+        return usersRepository.existsByEmail(email)
+    }
+
     suspend fun save(usersDto: UsersDTO): UsersDTO {
 
         val encodedPassword = passwordEncoder.encode(usersDto.pwd)

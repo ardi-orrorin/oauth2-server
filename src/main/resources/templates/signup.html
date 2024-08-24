@@ -22,15 +22,19 @@
     </div>
     <div class="floating-dots">
     </div>
-    <form th:action="@{/singup}" method="post" class="login-form">
+    <form th:action="@{/signup}" method="post" class="login-form">
       <h1>회원가입</h1>
-      <input type="text" name="username" placeholder="ID를 입력하세요." required autofocus>
-      <input type="password" name="password" placeholder="비밀번호를 입력하세요" required>
-      <input type="password" name="password-confirm" placeholder="비밀번호를 다시 입력하세요" required>
+      <input type="text" name="userId" placeholder="ID를 입력하세요." required autofocus>
+      <input type="password" name="pwd" placeholder="비밀번호를 입력하세요" required>
+      <input type="password" name="rePwd" placeholder="비밀번호를 다시 입력하세요" required>
+      <input type="text" name="name" placeholder="닉네임을 입력하세요" required>
       <input type="text" name="email" placeholder="이메일를 입력하세요" required>
       <button type="submit">가입</button>
-      <p class="error-message" th:if="${param.error}">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+      <p class="error-message" th:if="${validation}" th:text="${validation}"></p>
     </form>
+    <div class="menu-link">
+      <a href="/login">로그인</a>
+    </div>
     <div class="social-icons">
       <a href="https://github.com/ardi-orrorin" title="Github">GITHUB</a>
       <a href="https://anamensis.site" title="Anamensis">ANAMENSIS</a>

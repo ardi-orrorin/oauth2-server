@@ -12,6 +12,7 @@ body, html {
 .container {
     display: flex;
     height: 100%;
+    gap: 20px;
 }
 .image-container {
     flex: 1;
@@ -64,6 +65,7 @@ button {
     margin-top: 20px;
 }
 .error-message {
+    font-size: small;
     color: #ff0000;
     margin-top: 10px;
 }
@@ -117,6 +119,16 @@ button {
     bottom: 20px;
     left: 20px;
     z-index: 2;
+}
+.menu-link {
+    display: flex;
+    align-items: center;
+    height: 40px;
+}
+.menu-link a {
+    font-size: 0.8em;
+    text-decoration: none;
+    color: #333;
 }
 .social-icons a {
     margin-right: 15px;

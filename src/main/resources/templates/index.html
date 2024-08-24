@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,8 +159,8 @@
 <div class="container">
   <div class="menu-icon">☰</div>
   <div class="nav-menu">
-    <a href="/signup">Sign Up</a>
-    <a href="/login">Login</a>
+      <a href="/signup" >Sign Up</a>
+      <a href="/login" >Login</a>
   </div>
   <h1 class="main-text">ARDI</h1>
   <h3 class="main-text-smail">OAUTH2 SERVER</h3>
