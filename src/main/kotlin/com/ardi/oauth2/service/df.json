@@ -1,0 +1,128 @@
+{
+  "@class": "java.util.Collections$UnmodifiableMap",
+  "java.security.Principal": {
+    "@class": "org.springframework.security.authentication.UsernamePasswordAuthenticationToken",
+    "authorities": [
+      "java.util.Collections$UnmodifiableRandomAccessList",
+      []
+    ],
+    "details": {
+      "@class": "org.springframework.security.web.authentication.WebAuthenticationDetails",
+      "remoteAddress": "0:0:0:0:0:0:0:1",
+      "sessionId": "CFC29862EDCE13F9FB1AF30001605521"
+    },
+    "authenticated": true,
+    "principal": {
+      "@class": "com.ardi.oauth2.dto.UserDetailsDto",
+      "id": 212267,
+      "userId": "admin1",
+      "pwd": "$2a$10$UUCF4LZTzX234ma5MVOBqeoSFI3CfKZY92S4c80eIMVJOl/tYs956",
+      "username": "admin1",
+      "password": "$2a$10$UUCF4LZTzX234ma5MVOBqeoSFI3CfKZY92S4c80eIMVJOl/tYs956",
+      "authorities": [
+        "java.util.ArrayList",
+        []
+      ],
+      "enabled": true,
+      "accountNonExpired": true,
+      "accountNonLocked": true,
+      "credentialsNonExpired": true
+    },
+    "credentials": null
+  },
+  "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest": {
+    "@class": "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest",
+    "authorizationUri": "http://localhost:8099/oauth2/authorize",
+    "authorizationGrantType": {
+      "value": "authorization_code"
+    },
+    "responseType": {
+      "value": "code"
+    },
+    "clientId": "ardi",
+    "redirectUri": "http://localhost:3000/api/auth/callback/ardi",
+    "scopes": [
+      "java.util.Collections$UnmodifiableSet",
+      [
+        "address",
+        "phone",
+        "openid",
+        "name"
+      ]
+    ],
+    "state": "stst",
+    "additionalParameters": {
+      "@class": "java.util.Collections$UnmodifiableMap"
+    },
+    "authorizationRequestUri": "http://localhost:8099/oauth2/authorize?response_type=code&client_id=ardi&scope=address%20phone%20openid%20name&state=stst&redirect_uri=http://localhost:3000/api/auth/callback/ardi",
+    "attributes": {
+      "@class": "java.util.Collections$UnmodifiableMap"
+    }
+  },
+  "state": "LVnW0G4KJxMlMFfCqmrq8VYng7aQuQLB9Ma7yHdmCZ4="
+},
+
+{
+  "@class": "java.util.Collections$UnmodifiableMap",
+  "java.security.Principal": {
+    "@class": "org.springframework.security.authentication.UsernamePasswordAuthenticationToken",
+    "authorities": [
+      "java.util.Collections$UnmodifiableRandomAccessList",
+      []
+    ],
+    "details": {
+      "@class": "org.springframework.security.web.authentication.WebAuthenticationDetails",
+      "remoteAddress": "0:0:0:0:0:0:0:1",
+      "sessionId": "D2624D4BD46EF2B045C9FB53B44A2116"
+    },
+    "authenticated": true,
+    "principal": {
+      "@class": "com.ardi.oauth2.dto.UserDetailsDto",
+      "id": 212267,
+      "userId": "admin1",
+      "pwd": "$2a$10$UUCF4LZTzX234ma5MVOBqeoSFI3CfKZY92S4c80eIMVJOl/tYs956",
+      "authorities": [
+        "java.util.ArrayList",
+        []
+      ],
+      "username": "admin1",
+      "password": "$2a$10$UUCF4LZTzX234ma5MVOBqeoSFI3CfKZY92S4c80eIMVJOl/tYs956",
+      "enabled": true,
+      "accountNonExpired": true,
+      "accountNonLocked": true,
+      "credentialsNonExpired": true
+    },
+    "credentials": null
+  },
+  "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest": {
+    "@class": "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest",
+    "authorizationUri": "http://localhost:8099/oauth2/authorize",
+    "authorizationGrantType": {
+      "value": "authorization_code"
+    },
+    "responseType": {
+      "value": "code"
+    },
+    "clientId": "ardi",
+    "redirectUri": "http://localhost:3000/api/auth/callback/ardi",
+    "scopes": [
+      "java.util.Collections$UnmodifiableSet",
+      [
+        "address",
+        "phone",
+        "openid",
+        "name"
+      ]
+    ],
+    "state": "stst",
+    "additionalParameters": {
+      "@class": "java.util.Collections$UnmodifiableMap",
+      "continue": ""
+    },
+    "authorizationRequestUri": "http://localhost:8099/oauth2/authorize?response_type=code&client_id=ardi&scope=address%20phone%20openid%20name&state=stst&redirect_uri=http://localhost:3000/api/auth/callback/ardi&continue=",
+    "attributes": {
+      "@class": "java.util.Collections$UnmodifiableMap"
+    }
+  },
+  "state": "ko9NYVv9CLfhArUihFB00dcKzOfBgto7eYAtrO3ApIY="
+}

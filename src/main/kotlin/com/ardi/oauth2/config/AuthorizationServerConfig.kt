@@ -1,6 +1,5 @@
 package com.ardi.oauth2.config
 
-import com.ardi.oauth2.dto.CustomScope
 import com.ardi.oauth2.dto.UserDetailsDto
 import com.ardi.oauth2.service.OidcUserService
 import com.nimbusds.jose.jwk.JWKSet
@@ -20,34 +19,23 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.core.AuthorizationGrantType
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod
-import org.springframework.security.oauth2.core.oidc.OidcScopes
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings
-import org.springframework.security.oauth2.server.authorization.settings.ClientSettings
-import org.springframework.security.oauth2.server.authorization.settings.TokenSettings
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
-import java.time.Duration
 import java.util.*
 
 
@@ -108,45 +96,15 @@ class AuthorizationServerConfig {
         }
 
         http.csrf(withDefaults())
-            .cors { corsConfigurationSource() }
+        http.cors(withDefaults())
+
         return http.build()
     }
 
-    @Bean
-    fun registeredClientRepository(): RegisteredClientRepository {
-        val registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientName("ardi")
-            .clientId("oidc-client-ardi")
-            .clientSecret(BCryptPasswordEncoder().encode("oidc-secret-ardi"))
-            .clientAuthenticationMethods {
-                it.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-            }
-            .authorizationGrantTypes {
-                it.add(AuthorizationGrantType.AUTHORIZATION_CODE)
-                it.add(AuthorizationGrantType.REFRESH_TOKEN)
-            }
-            .redirectUris {
-                it.add("http://localhost:3000/api/auth/callback/ardi")
-            }
-            .scopes {
-                it.add(OidcScopes.OPENID)
-                it.add(CustomScope.NAME)
-                it.add(CustomScope.BIRTHDAY)
-                it.add(CustomScope.PHONE)
-                it.add(CustomScope.ADDRESS)
-            }
-            .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
-            .build()
-
-        return InMemoryRegisteredClientRepository(registeredClient)
-    }
 
     @Bean
     fun oAuth2TokenCustomizer(userinfoService: OidcUserService): OAuth2TokenCustomizer<JwtEncodingContext> {
         return OAuth2TokenCustomizer { context ->
-
-//            if(OAuth2TokenType.ACCESS_TOKEN.value != context.tokenType.value) return@OAuth2TokenCustomizer
-
             val authentication = context.getPrincipal() as Authentication
             val principal =  authentication.principal as UserDetailsDto
             val user = userinfoService.loadUserByUsername(principal.userId, context.authorizedScopes)
@@ -157,28 +115,24 @@ class AuthorizationServerConfig {
         }
     }
 
-    @Bean
-    fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-
-        config.allowedOrigins = listOf(
-            "http://192.168.0.49:3000",
-            "http://localhost:3000"
-        )
-        config.allowedMethods = listOf(
-            "GET",
-            "POST",
-        )
-        config.allowedHeaders = listOf(
-            "Authorization",
-            "Content-Type",
-        )
-        config.allowCredentials = true
-        config.maxAge = 3600L
-        source.registerCorsConfiguration("/**", config)
-        return source
-    }
+ //    @Bean
+//    fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
+//        val source = UrlBasedCorsConfigurationSource()
+//        val config = CorsConfiguration()
+//
+//        config.allowedMethods = listOf(
+//            "GET",
+//            "POST",
+//        )
+//        config.allowedHeaders = listOf(
+//            "Authorization",
+//            "Content-Type",
+//        )
+//        config.allowCredentials = true
+//        config.maxAge = 3600L
+//        source.registerCorsConfiguration("/**", config)
+//        return source
+//    }
 
     @Bean
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
@@ -205,13 +159,6 @@ class AuthorizationServerConfig {
     @Bean
     fun jwtEncoder(jwkSource: JWKSource<SecurityContext>): JwtEncoder =
         NimbusJwtEncoder(jwkSource)
-
-    @Bean
-    fun tokenSettings(): TokenSettings {
-        return TokenSettings.builder()
-            .accessTokenTimeToLive(Duration.ofDays(1))
-            .build()
-    }
 
     private fun generateRsa(): RSAKey {
         val keyPair = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()

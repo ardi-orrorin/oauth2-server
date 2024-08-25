@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class OidcUserService(
-    final val usersRepository: UsersRepository
+    private val usersRepository: UsersRepository
 ) {
 
     fun loadUserByUsername(username: String, scopes: Set<String>): OidcUserInfo {
@@ -32,8 +32,6 @@ class OidcUserService(
                 }
             }
         }
-
-        println("props: $props")
 
         return OidcUserInfo(props.toMap())
     }
