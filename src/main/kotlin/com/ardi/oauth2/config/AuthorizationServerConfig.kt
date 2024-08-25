@@ -62,6 +62,9 @@ class AuthorizationServerConfig {
                     it.userInfoMapper(userInfoMapper)
                 }
             }
+            .authorizationEndpoint {
+                it.consentPage("/oauth2/consent")
+            }
 
         http.exceptionHandling { exceptions ->
             exceptions.defaultAuthenticationEntryPointFor( // 인가 실패에 대한 처리를 정의
@@ -82,9 +85,10 @@ class AuthorizationServerConfig {
     ): SecurityFilterChain? {
 
         http.authorizeHttpRequests {
-            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**").permitAll()
-            it.requestMatchers("/" ).authenticated()
-            it.anyRequest().hasRole("ADMIN")
+            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/oauth2/consent").permitAll()
+            it.anyRequest().authenticated()
+//            it.requestMatchers("/" ).authenticated()
+//            it.anyRequest().hasRole("ADMIN")
 
         }
         .formLogin {

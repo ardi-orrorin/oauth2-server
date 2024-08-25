@@ -32,10 +32,15 @@ class RegisteredClientServiceTest {
     @Test
     fun save() {
 
+        // clientName, redirectUris, scopes
+        val clientName = "anamensis"
+        val clientId = BCryptPasswordEncoder().encode("anamensis" + UUID.randomUUID().toString())
+        val clientSecret = BCryptPasswordEncoder().encode(clientId + UUID.randomUUID().toString())
+
         val client = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientName("ardi")
-            .clientId("ardi")
-            .clientSecret(BCryptPasswordEncoder().encode("ardi"))
+            .clientName(clientName)
+            .clientId(clientId)
+            .clientSecret(BCryptPasswordEncoder().encode(clientSecret))
             .clientIdIssuedAt(Instant.now())
             .clientSecretExpiresAt(Instant.now().plus(Duration.ofDays(30)))
             .clientAuthenticationMethods {

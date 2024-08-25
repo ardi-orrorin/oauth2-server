@@ -49,9 +49,7 @@ final class RegisteredClientService (
         val client = clientRepository.findByClientId(clientId!!)
             ?: throw IllegalArgumentException("Invalid clientId: $clientId")
 
-        val dto = client.toDto()
-
-        return dto
+        return client.toDto()
     }
 
     private final fun toEntity(dto: RegisteredClient): Client {

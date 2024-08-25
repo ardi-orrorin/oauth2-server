@@ -1,13 +1,9 @@
 package com.ardi.oauth2.service
 
 import com.ardi.oauth2.Repository.AuthorizationRepository
-import com.ardi.oauth2.config.AuthenticationTokenModule
-import com.ardi.oauth2.config.UserDetailsDtoModule
 import com.ardi.oauth2.entity.Authorization
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.authentication.jaas.SecurityContextLoginModule
 import org.springframework.security.jackson2.SecurityJackson2Modules
 import org.springframework.security.oauth2.core.*
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
@@ -18,19 +14,19 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module
-import org.springframework.stereotype.Component
 import org.springframework.util.Assert
 
-
-@Component
+// fixme: principal 관련 직렬화 오류 발생
+//@Component
 class CustomOAuth2AuthorizationService(
     private val authorizationRepository: AuthorizationRepository,
     private val clientRepository: RegisteredClientRepository,
 ): OAuth2AuthorizationService {
 
     private val objectMapper = ObjectMapper().apply {
-        registerModules(SecurityJackson2Modules.getModules(this::class.java.classLoader))
+        registerModules(SecurityJackson2Modules.getModules(this::class.java.classLoader.parent))
         registerModule(OAuth2AuthorizationServerJackson2Module())
+
     }
 
     override fun save(authorization: OAuth2Authorization?) {
@@ -55,6 +51,8 @@ class CustomOAuth2AuthorizationService(
         Assert.notNull(token, "token not null")
         Assert.notNull(tokenType, "tokenType not null")
 
+        println("token: $token")
+        println("tokenType: $tokenType")
         val result = when(tokenType?.value) {
             OAuth2ParameterNames.STATE -> token?.let{ authorizationRepository.findByState(token) }
             OAuth2ParameterNames.CODE -> token?.let{ authorizationRepository.findByAuthorizationCodeValue(token) }
@@ -65,6 +63,7 @@ class CustomOAuth2AuthorizationService(
             OAuth2ParameterNames.DEVICE_CODE -> token?.let{ authorizationRepository.findByDeviceCodeValue(token) }
             else -> authorizationRepository.findByStateOrAuthorizationCodeValueOrAccessTokenValueOrRefreshTokenValueOrOidcIdTokenValueOrUserCodeValueOrDeviceCodeValue(token!!)
         }
+
 
         return result?.toDto()
     }
