@@ -1,22 +1,16 @@
 package com.ardi.oauth2.entity
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import org.springframework.security.oauth2.core.AuthorizationGrantType
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
-import org.springframework.security.oauth2.server.authorization.settings.ClientSettings
-import org.springframework.security.oauth2.server.authorization.settings.TokenSettings
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneOffset
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
-@Entity
+@Entity(name = "client")
 @Table(name = "client")
 class Client(
 
@@ -76,7 +70,11 @@ class Client(
     @field:NotNull
     @field:Column(name = "token_settings", nullable = false, length = 2000)
     val tokenSettings: String,
+
+    @OneToMany(mappedBy = "registeredClient")
+    val userClients: List<UserClient> = mutableListOf()
 ) {
+
     override fun toString(): String {
         return "Client(id='$id', clientId='$clientId', clientIdIssuedAt=$clientIdIssuedAt, clientSecret='$clientSecret', clientSecretExpiresAt=$clientSecretExpiresAt, clientName='$clientName', clientAuthenticationMethods='$clientAuthenticationMethods', authorizationGrantTypes='$authorizationGrantTypes', redirectUris='$redirectUris', postLogoutRedirectUris=$postLogoutRedirectUris, scopes='$scopes', clientSettings='$clientSettings', tokenSettings='$tokenSettings')"
     }

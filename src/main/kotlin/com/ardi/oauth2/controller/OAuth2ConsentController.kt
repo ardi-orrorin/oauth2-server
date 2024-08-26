@@ -49,19 +49,4 @@ class OAuth2ConsentController(
         return "oauth2/consent"
     }
 
-    @GetMapping("/oauth2/client/registration")
-    fun getClientRegistration(model: Model): String {
-        return "oauth2/client/regist"
-    }
-
-    @PostMapping("/oauth2/client/registration")
-    fun postClientRegistration(
-        request: RegisteredClientRequest.Create
-    ): String {
-
-        clientService.save(request)
-
-
-        return "oauth2/client/regist"
-    }
 }

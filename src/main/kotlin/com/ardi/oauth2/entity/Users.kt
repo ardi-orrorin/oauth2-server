@@ -52,7 +52,11 @@ class Users(
 
     @Column(name = "updated_at", nullable = false)
     val updatedAt: LocalDateTime = LocalDateTime.now(),
+
 ) {
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    val userClient: List<UserClient> = mutableListOf()
+
     fun toUserDetails() = UserDetailsDto(
         id = id,
         userId = userId,
@@ -73,4 +77,9 @@ class Users(
         createdAt     = createdAt,
         updatedAt     = updatedAt,
     )
+
+    override fun toString(): String {
+        return "Users(id=$id, userId='$userId', pwd='$pwd', email='$email', name='$name', birthDay=$birthDay, phone=$phone, address=$address, detailAddress=$detailAddress, profileImage=$profileImage, createdAt=$createdAt, updatedAt=$updatedAt, userClient=$userClient)"
+    }
+
 }

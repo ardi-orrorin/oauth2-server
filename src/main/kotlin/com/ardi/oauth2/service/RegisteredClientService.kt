@@ -83,6 +83,11 @@ final class RegisteredClientService (
         return client.toDto()
     }
 
+    fun findAll(): List<RegisteredClient> {
+        return clientRepository.findAll().map { it.toDto() }
+    }
+
+
     private final fun RegisteredClient.toEntity(): Client {
 
         val methods = this.clientAuthenticationMethods.map { it.value }.joinToString(",")

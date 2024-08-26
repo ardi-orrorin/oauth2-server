@@ -57,3 +57,9 @@ CREATE TABLE authorization_consent (
     authorities                     VARCHAR(1000) NOT NULL,
     PRIMARY KEY (registered_client_id, principal_name)
 );
+
+CREATE TABLE user_clients (
+    user_id                         VARCHAR(255) NOT NULL,
+    registered_client_id            VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id, registered_client_id)
+);
