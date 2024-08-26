@@ -21,14 +21,8 @@ import java.time.ZoneOffset
 @Component
 final class RegisteredClientService (
     private val clientRepository: ClientRepository,
+    private val objectMapper: ObjectMapper,
 ): RegisteredClientRepository {
-
-    private val objectMapper = ObjectMapper().apply {
-        val classLoader = this::class.java.classLoader
-        val securityModules = SecurityJackson2Modules.getModules(classLoader)
-        registerModules(securityModules)
-        registerModule(OAuth2AuthorizationServerJackson2Module())
-    }
 
     override fun save(registeredClient: RegisteredClient?) {
         Assert.notNull(registeredClient, "registeredClient cannot be null")
@@ -49,7 +43,8 @@ final class RegisteredClientService (
         val client = clientRepository.findByClientId(clientId!!)
             ?: throw IllegalArgumentException("Invalid clientId: $clientId")
 
-        return client.toDto()
+        val dto = client.toDto()
+        return dto
     }
 
     private final fun toEntity(dto: RegisteredClient): Client {
@@ -78,7 +73,7 @@ final class RegisteredClientService (
             .map { ClientAuthenticationMethod(it) }
             .toSet()
 
-        val grantTypes = authorizationGrantTypes.split(",")
+        val grantTypes = this.authorizationGrantTypes.split(",")
             .map { AuthorizationGrantType(it) }
             .toSet()
 
@@ -89,16 +84,16 @@ final class RegisteredClientService (
 
         return RegisteredClient
             .withId(this.id)
-            .clientId(clientId)
-            .clientIdIssuedAt(clientIdIssuedAt)
-            .clientSecret(clientSecret)
-            .clientSecretExpiresAt(clientSecretExpiresAt?.toInstant(ZoneOffset.UTC))
-            .clientName(clientName)
+            .clientId(this.clientId)
+            .clientIdIssuedAt(this.clientIdIssuedAt)
+            .clientSecret(this.clientSecret)
+            .clientSecretExpiresAt(this.clientSecretExpiresAt?.toInstant(ZoneOffset.UTC))
+            .clientName(this.clientName)
             .clientAuthenticationMethods { it.addAll(methods) }
             .authorizationGrantTypes { it.addAll(grantTypes) }
-            .redirectUris { it.addAll(redirectUris.split(",")) }
-            .postLogoutRedirectUris { it.addAll(postLogoutRedirectUris?.split(",") ?: emptyList()) }
-            .scopes { it.addAll(scopes.split(",")) }
+            .redirectUris { it.addAll(this.redirectUris.split(",")) }
+            .postLogoutRedirectUris { it.addAll(this.postLogoutRedirectUris?.split(",") ?: emptyList()) }
+            .scopes { it.addAll(this.scopes.split(",")) }
             .clientSettings(ClientSettings.withSettings(clientSettings).build())
             .tokenSettings(TokenSettings.withSettings(tokenSettings).build())
             .build()

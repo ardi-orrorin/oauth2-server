@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.Assert
 
 
-//@Component
+@Component
 class CustomOAuth2AuthorizationConsentService(
     private val authorizationConsentRepository: AuthorizationConsentRepository,
     private val registeredClientRepository: RegisteredClientRepository,

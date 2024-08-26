@@ -47,33 +47,4 @@ final class UserService(
 
         return users.toDto()
     }
-//
-//    suspend fun findByUserId(userId: String): UsersDTO {
-//        val users = usersRepository.findByUserId(userId)
-//            ?: throw IllegalArgumentException("username is not found")
-//
-//        return users.toDto()
-//    }
-
-//    suspend fun login(username: String, password: String): UserResponse.Login<UsersDTO> {
-//        val users = usersRepository.findByUserId(username)
-//            ?: throw IllegalArgumentException("username is not found")
-//
-//        if (!passwordEncoder.matches(password, users.pwd)) {
-//            throw IllegalArgumentException("password is not correct")
-//        }
-//
-//        TODO("토큰 생성 로직 추가 예정")
-//
-//        val res = UserResponse.Login(
-//            users.toDto(),
-//            "Bearer",
-//            "access_token",
-//            3600,
-//            "refresh_token",
-//            3600,
-//        )
-//
-//        return res
-//    }
 }

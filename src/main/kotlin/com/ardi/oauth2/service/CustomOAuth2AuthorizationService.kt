@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module
+import org.springframework.stereotype.Component
 import org.springframework.util.Assert
 
 // fixme: principal 관련 직렬화 오류 발생
@@ -21,15 +22,10 @@ import org.springframework.util.Assert
 class CustomOAuth2AuthorizationService(
     private val authorizationRepository: AuthorizationRepository,
     private val clientRepository: RegisteredClientRepository,
+    private val objectMapper: ObjectMapper,
 ): OAuth2AuthorizationService {
 
-    private val objectMapper = ObjectMapper().apply {
-        registerModules(SecurityJackson2Modules.getModules(this::class.java.classLoader.parent))
-        registerModule(OAuth2AuthorizationServerJackson2Module())
-
-    }
-
-    override fun save(authorization: OAuth2Authorization?) {
+   override fun save(authorization: OAuth2Authorization?) {
         Assert.notNull(authorization, "authorization not null")
 
         authorizationRepository.save(authorization!!.toEntity())
@@ -51,8 +47,6 @@ class CustomOAuth2AuthorizationService(
         Assert.notNull(token, "token not null")
         Assert.notNull(tokenType, "tokenType not null")
 
-        println("token: $token")
-        println("tokenType: $tokenType")
         val result = when(tokenType?.value) {
             OAuth2ParameterNames.STATE -> token?.let{ authorizationRepository.findByState(token) }
             OAuth2ParameterNames.CODE -> token?.let{ authorizationRepository.findByAuthorizationCodeValue(token) }

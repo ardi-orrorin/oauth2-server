@@ -33,6 +33,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
@@ -63,7 +65,7 @@ class AuthorizationServerConfig {
                 }
             }
             .authorizationEndpoint {
-                it.consentPage("/oauth2/consent")
+                it.consentPage("/consent")
             }
 
         http.exceptionHandling { exceptions ->
@@ -85,10 +87,10 @@ class AuthorizationServerConfig {
     ): SecurityFilterChain? {
 
         http.authorizeHttpRequests {
-            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/oauth2/consent").permitAll()
-            it.anyRequest().authenticated()
-//            it.requestMatchers("/" ).authenticated()
-//            it.anyRequest().hasRole("ADMIN")
+            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/consent", "/oauth2/**").permitAll()
+//            it.anyRequest().authenticated()
+            it.requestMatchers("/" ).authenticated()
+            it.anyRequest().hasRole("Role_USER")
 
         }
         .formLogin {
@@ -100,7 +102,7 @@ class AuthorizationServerConfig {
         }
 
         http.csrf(withDefaults())
-        http.cors(withDefaults())
+            .cors { corsConfigurationSource() }
 
         return http.build()
     }
@@ -119,24 +121,24 @@ class AuthorizationServerConfig {
         }
     }
 
- //    @Bean
-//    fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
-//        val source = UrlBasedCorsConfigurationSource()
-//        val config = CorsConfiguration()
-//
-//        config.allowedMethods = listOf(
-//            "GET",
-//            "POST",
-//        )
-//        config.allowedHeaders = listOf(
-//            "Authorization",
-//            "Content-Type",
-//        )
-//        config.allowCredentials = true
-//        config.maxAge = 3600L
-//        source.registerCorsConfiguration("/**", config)
-//        return source
-//    }
+     @Bean
+    fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+
+        config.allowedMethods = listOf(
+            "GET",
+            "POST",
+        )
+        config.allowedHeaders = listOf(
+            "Authorization",
+            "Content-Type",
+        )
+        config.allowCredentials = true
+        config.maxAge = 3600L
+        source.registerCorsConfiguration("/**", config)
+        return source
+    }
 
     @Bean
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {

@@ -9,4 +9,9 @@ import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2A
 @Configuration
 class BeanConfig {
 
+    @Bean
+    fun objectMapper() = ObjectMapper().apply {
+        registerModules(SecurityJackson2Modules.getModules(this::class.java.classLoader))
+        registerModule(OAuth2AuthorizationServerJackson2Module())
+    }
 }

@@ -5,6 +5,7 @@ import com.ardi.oauth2.dto.UsersDTO
 import jakarta.persistence.*
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import org.springframework.security.core.GrantedAuthority
 import java.time.LocalDateTime
 
 @Entity
@@ -55,7 +56,7 @@ class Users(
     fun toUserDetails() = UserDetailsDto(
         id = id,
         userId = userId,
-        pwd = pwd
+        pwd = pwd,
     )
 
     fun toDto() = UsersDTO (

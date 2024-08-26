@@ -1,6 +1,5 @@
 package com.ardi.oauth2.controller
 
-import com.ardi.oauth2.dto.CustomScope
 import com.ardi.oauth2.dto.CustomScopeEnum
 import com.ardi.oauth2.service.RegisteredClientService
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 class OAuth2ConsentController(
     private val clientService: RegisteredClientService,
 ) {
-    @GetMapping("/oauth2/consent")
+    @GetMapping("/consent")
     fun showConsentPage(
         model: Model,
         @RequestParam(OAuth2ParameterNames.CLIENT_ID) clientId: String,
@@ -28,11 +27,12 @@ class OAuth2ConsentController(
             .toSet()
 
 
+        model.addAttribute("clientId", clientId)
         model.addAttribute("clientName", client.clientName)
         model.addAttribute("scopes", scopes)
         model.addAttribute("state", state)
 
-        return "oauth2/consent"
+        return "consent"
     }
 
     @GetMapping("/regist/client")
