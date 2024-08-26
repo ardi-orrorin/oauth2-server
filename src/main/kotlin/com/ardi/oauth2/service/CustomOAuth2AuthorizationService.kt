@@ -4,7 +4,6 @@ import com.ardi.oauth2.Repository.AuthorizationRepository
 import com.ardi.oauth2.entity.Authorization
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.security.jackson2.SecurityJackson2Modules
 import org.springframework.security.oauth2.core.*
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
 import org.springframework.security.oauth2.core.oidc.OidcIdToken
@@ -13,12 +12,10 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
-import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module
 import org.springframework.stereotype.Component
 import org.springframework.util.Assert
 
-// fixme: principal 관련 직렬화 오류 발생
-//@Component
+@Component
 class CustomOAuth2AuthorizationService(
     private val authorizationRepository: AuthorizationRepository,
     private val clientRepository: RegisteredClientRepository,
@@ -58,11 +55,10 @@ class CustomOAuth2AuthorizationService(
             else -> authorizationRepository.findByStateOrAuthorizationCodeValueOrAccessTokenValueOrRefreshTokenValueOrOidcIdTokenValueOrUserCodeValueOrDeviceCodeValue(token!!)
         }
 
-
         return result?.toDto()
     }
 
-    private final fun OAuth2Authorization.toEntity(): Authorization {
+    private fun OAuth2Authorization.toEntity(): Authorization {
 
 
         val authorizationCode: OAuth2Authorization.Token<OAuth2AuthorizationCode>? = this.getToken(OAuth2AuthorizationCode::class.java)

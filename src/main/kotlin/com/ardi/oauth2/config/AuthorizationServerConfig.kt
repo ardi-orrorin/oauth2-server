@@ -88,9 +88,8 @@ class AuthorizationServerConfig {
 
         http.authorizeHttpRequests {
             it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/consent", "/oauth2/**").permitAll()
-//            it.anyRequest().authenticated()
             it.requestMatchers("/" ).authenticated()
-            it.anyRequest().hasRole("Role_USER")
+            it.anyRequest().authenticated()
 
         }
         .formLogin {
@@ -102,7 +101,7 @@ class AuthorizationServerConfig {
         }
 
         http.csrf(withDefaults())
-            .cors { corsConfigurationSource() }
+            .cors(withDefaults())
 
         return http.build()
     }
@@ -113,7 +112,7 @@ class AuthorizationServerConfig {
         return OAuth2TokenCustomizer { context ->
             val authentication = context.getPrincipal() as Authentication
             val principal =  authentication.principal as UserDetailsDto
-            val user = userinfoService.loadUserByUsername(principal.userId, context.authorizedScopes)
+            val user = userinfoService.loadUserByUsername(principal.username, context.authorizedScopes)
 
             context.claims.claims {
                 it.putAll(user.claims)

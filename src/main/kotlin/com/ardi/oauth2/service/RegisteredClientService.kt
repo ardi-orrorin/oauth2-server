@@ -18,6 +18,8 @@ import org.springframework.util.Assert
 import java.time.Duration
 import java.time.ZoneOffset
 
+
+// fixme: parameter client_id 오류 발생
 @Component
 final class RegisteredClientService (
     private val clientRepository: ClientRepository,
@@ -43,8 +45,7 @@ final class RegisteredClientService (
         val client = clientRepository.findByClientId(clientId!!)
             ?: throw IllegalArgumentException("Invalid clientId: $clientId")
 
-        val dto = client.toDto()
-        return dto
+        return client.toDto()
     }
 
     private final fun toEntity(dto: RegisteredClient): Client {

@@ -48,11 +48,12 @@ class RegisteredClientServiceTest {
             .clientSecretExpiresAt(Instant.now().plus(Duration.ofDays(30)))
             .clientAuthenticationMethods {
                 it.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                it.add(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
+                it.add(ClientAuthenticationMethod.CLIENT_SECRET_POST)
             }
             .authorizationGrantTypes {
                 it.add(AuthorizationGrantType.AUTHORIZATION_CODE)
                 it.add(AuthorizationGrantType.REFRESH_TOKEN)
+                it.add(AuthorizationGrantType.JWT_BEARER)
             }
             .redirectUris {
                 it.add("http://localhost:3000/api/auth/callback/ardi")
@@ -64,7 +65,10 @@ class RegisteredClientServiceTest {
                 it.add(CustomScope.PHONE)
                 it.add(CustomScope.ADDRESS)
             }
-            .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+            .clientSettings(ClientSettings.builder()
+                .requireAuthorizationConsent(true)
+                .build()
+            )
             .tokenSettings(TokenSettings.builder()
                 .accessTokenTimeToLive(Duration.ofDays(1))
                 .refreshTokenTimeToLive(Duration.ofDays(30))

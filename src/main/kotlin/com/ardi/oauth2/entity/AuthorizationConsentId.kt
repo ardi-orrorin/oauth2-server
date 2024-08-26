@@ -6,10 +6,7 @@ import java.io.Serializable
 import java.util.*
 
 class AuthorizationConsentId(
-
     val registeredClientId: String,
-
-
     val principalName: String,
 ) : Serializable {
     override fun hashCode(): Int = Objects.hash(registeredClientId, principalName)

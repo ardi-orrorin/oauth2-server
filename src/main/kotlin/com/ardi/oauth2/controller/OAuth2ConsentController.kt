@@ -22,6 +22,8 @@ class OAuth2ConsentController(
     ): String {
         val client: RegisteredClient = clientService.findByClientId(clientId)
 
+
+
         val scopes = scope.split(" ")
             .map { CustomScopeEnum.entries.first { scope -> scope.value == it } }
             .toSet()
