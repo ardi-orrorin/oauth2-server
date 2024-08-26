@@ -1,10 +1,13 @@
 package com.ardi.oauth2.service
 
 import com.ardi.oauth2.Repository.ClientRepository
+import com.ardi.oauth2.dto.request.RegisteredClientRequest
 import com.ardi.oauth2.entity.Client
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.jackson2.SecurityJackson2Modules
 import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod
@@ -16,23 +19,55 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.stereotype.Component
 import org.springframework.util.Assert
 import java.time.Duration
+import java.time.Instant
 import java.time.ZoneOffset
+import java.util.UUID
 
 
-// fixme: parameter client_id 오류 발생
 @Component
 final class RegisteredClientService (
     private val clientRepository: ClientRepository,
     private val objectMapper: ObjectMapper,
+    private val passwordEncoder: PasswordEncoder,
 ): RegisteredClientRepository {
 
     override fun save(registeredClient: RegisteredClient?) {
         Assert.notNull(registeredClient, "registeredClient cannot be null")
 
-        clientRepository.save(toEntity(registeredClient!!))
+        clientRepository.save(registeredClient!!.toEntity())
     }
 
-    override fun findById(id: String?): RegisteredClient {
+    fun save(registeredClient: RegisteredClientRequest.Create) {
+
+        val secert = passwordEncoder.encode(UUID.randomUUID().toString())
+
+        val client = RegisteredClient
+            .withId(UUID.randomUUID().toString())
+            .clientIdIssuedAt(Instant.now())
+            .clientName(registeredClient.clientName)
+            .clientId(registeredClient.clientName)
+            .clientSecret(passwordEncoder.encode(secert))
+            .clientSecretExpiresAt(null)
+            .clientAuthenticationMethods {
+                it.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            }
+            .authorizationGrantTypes {
+                it.add(AuthorizationGrantType.AUTHORIZATION_CODE)
+            }
+            .redirectUris { it.add(registeredClient.redirectUri) }
+//            .scopes { it.addAll(registeredClient.scopes) }
+            .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+            .tokenSettings(TokenSettings.builder()
+                .refreshTokenTimeToLive(Duration.ofDays(30))
+                .accessTokenTimeToLive(Duration.ofDays(1))
+                .build()
+            )
+            .build()
+
+        clientRepository.save(client.toEntity())
+    }
+
+        override fun findById(id: String?): RegisteredClient {
         Assert.notNull(id, "id cannot be null")
         val client = clientRepository.findById(id!!)
             .orElseThrow { IllegalArgumentException("Invalid id: $id") }
@@ -48,24 +83,24 @@ final class RegisteredClientService (
         return client.toDto()
     }
 
-    private final fun toEntity(dto: RegisteredClient): Client {
+    private final fun RegisteredClient.toEntity(): Client {
 
-        val methods = dto.clientAuthenticationMethods.map { it.value }.joinToString(",")
-        val grantTypes = dto.authorizationGrantTypes.map { it.value }.joinToString(",")
+        val methods = this.clientAuthenticationMethods.map { it.value }.joinToString(",")
+        val grantTypes = this.authorizationGrantTypes.map { it.value }.joinToString(",")
 
         return Client(
-            id = dto.id,
-            clientId = dto.clientId,
-            clientSecret = dto.clientSecret ?: "",
-            clientSecretExpiresAt = dto.clientSecretExpiresAt?.atZone(ZoneOffset.UTC)?.toLocalDateTime()?.plusYears(3),
-            clientName = dto.clientName,
+            id = this.id,
+            clientId = this.clientId,
+            clientSecret = this.clientSecret ?: "",
+            clientSecretExpiresAt = this.clientSecretExpiresAt?.atZone(ZoneOffset.UTC)?.toLocalDateTime()?.plusYears(3),
+            clientName = this.clientName,
             clientAuthenticationMethods = methods,
             authorizationGrantTypes = grantTypes,
-            redirectUris = dto.redirectUris.joinToString(","),
-            postLogoutRedirectUris = dto.postLogoutRedirectUris?.joinToString(","),
-            scopes = dto.scopes.joinToString(","),
-            clientSettings = objectMapper.writeValueAsString(dto.clientSettings.settings),
-            tokenSettings = objectMapper.writeValueAsString(dto.tokenSettings.settings),
+            redirectUris = this.redirectUris.joinToString(","),
+            postLogoutRedirectUris = this.postLogoutRedirectUris?.joinToString(","),
+            scopes = this.scopes.joinToString(","),
+            clientSettings = objectMapper.writeValueAsString(this.clientSettings.settings),
+            tokenSettings = objectMapper.writeValueAsString(this.tokenSettings.settings),
         )
     }
 

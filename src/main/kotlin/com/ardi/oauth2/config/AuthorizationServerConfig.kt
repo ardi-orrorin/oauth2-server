@@ -100,7 +100,7 @@ class AuthorizationServerConfig {
                 .permitAll()
         }
 
-        http.csrf(withDefaults())
+        http.csrf { it.disable() }
             .cors(withDefaults())
 
         return http.build()
@@ -175,8 +175,5 @@ class AuthorizationServerConfig {
             .build()
     }
 
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+
 }

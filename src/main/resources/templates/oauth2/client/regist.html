@@ -141,14 +141,14 @@
 </div>
 <div class="container">
   <h1 class="main-text">클라이언트 생성</h1>
-  <form th:action="@{/oauth/clients}" method="post" id="clientForm">
+  <form method="post" id="clientForm">
     <div class="form-group">
       <label for="clientName">클라이언트 이름</label>
       <input type="text" id="clientName" name="clientName" required>
     </div>
     <div class="form-group">
       <label for="redirectUri">리다이렉트 URI</label>
-      <input type="url" id="redirectUri" name="redirectUris" placeholder="http:// 포함해서 입력하세요" required>
+      <input type="url" id="redirectUri" name="redirectUri" placeholder="http:// 포함해서 입력하세요" required>
     </div>
     <div class="form-group">
       <label>스코프</label>

@@ -2,16 +2,19 @@ package com.ardi.oauth2.controller
 
 import com.ardi.oauth2.dto.CustomScopeEnum
 import com.ardi.oauth2.dto.UserDetailsDto
+import com.ardi.oauth2.dto.request.RegisteredClientRequest
 import com.ardi.oauth2.service.CustomOAuth2AuthorizationConsentService
 import com.ardi.oauth2.service.RegisteredClientService
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
@@ -46,8 +49,19 @@ class OAuth2ConsentController(
         return "oauth2/consent"
     }
 
-    @GetMapping("/oauth2/client")
-    fun showClientRegistrationPage(model: Model): String {
-        return "oauth2/client"
+    @GetMapping("/oauth2/client/registration")
+    fun getClientRegistration(model: Model): String {
+        return "oauth2/client/regist"
+    }
+
+    @PostMapping("/oauth2/client/registration")
+    fun postClientRegistration(
+        request: RegisteredClientRequest.Create
+    ): String {
+
+        clientService.save(request)
+
+
+        return "oauth2/client/regist"
     }
 }

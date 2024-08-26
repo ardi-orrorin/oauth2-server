@@ -4,6 +4,8 @@ import com.ardi.oauth2.dto.UserDetailsDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.jackson2.SecurityJackson2Modules
 import org.springframework.security.oauth2.core.OAuth2Token
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module
@@ -18,5 +20,10 @@ class BeanConfig {
         registerModules(SecurityJackson2Modules.getModules(this::class.java.classLoader))
         addMixIn(HashMap::class.java, UserDetailsDto::class.java)
         registerModule(OAuth2AuthorizationServerJackson2Module())
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
     }
 }
