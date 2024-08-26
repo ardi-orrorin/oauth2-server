@@ -137,11 +137,11 @@
     <form class="consent-form" th:action="@{/oauth2/authorize}" method="post">
       <input type="hidden" name="client_id" th:value="${clientId}">
       <input type="hidden" name="state" th:value="${state}">
+      <input type="hidden" name="redirect_uri" th:value="${redirectUri}">
       <ul class="scopes-list">
         <li class="scope-item" th:each="scope : ${scopes}">
           <input type="checkbox" th:id="${'scope-' + scope.value}" th:name="scope.value"
-                 th:value="${scope.value}" th:checked="${scope.value.equals('openid')}"
-                 th:disabled="${scope.value.equals('openid')}"
+                 th:value="${scope.value}"
           >
           <label th:for="${'scope-' + scope.value}" th:text="${scope.description}">Scope</label>
         </li>

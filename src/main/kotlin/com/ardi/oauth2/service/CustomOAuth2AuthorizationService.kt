@@ -25,7 +25,7 @@ class CustomOAuth2AuthorizationService(
    override fun save(authorization: OAuth2Authorization?) {
         Assert.notNull(authorization, "authorization not null")
 
-        authorizationRepository.save(authorization!!.toEntity())
+        authorizationRepository.save(toEntity(authorization!!))
     }
 
     override fun remove(authorization: OAuth2Authorization?) {
@@ -58,43 +58,45 @@ class CustomOAuth2AuthorizationService(
         return result?.toDto()
     }
 
-    private fun OAuth2Authorization.toEntity(): Authorization {
+    private fun toEntity(authorization: OAuth2Authorization): Authorization {
 
 
-        val authorizationCode: OAuth2Authorization.Token<OAuth2AuthorizationCode>? = this.getToken(OAuth2AuthorizationCode::class.java)
+        val authorizationCode: OAuth2Authorization.Token<OAuth2AuthorizationCode>? = authorization.getToken(OAuth2AuthorizationCode::class.java)
 //            ?: throw IllegalArgumentException("Invalid authorization code")
 
-        val accessToken: OAuth2Authorization.Token<OAuth2AccessToken>? = this.getToken(OAuth2AccessToken::class.java)
-//            ?: throw IllegalArgumentException("Invalid access token")
+        val accessToken: OAuth2Authorization.Token<OAuth2AccessToken>? = authorization.getToken(OAuth2AccessToken::class.java)
+            ?: throw IllegalArgumentException("Invalid access token")
 
-        val refreshToken: OAuth2Authorization.Token<OAuth2RefreshToken>? = this.getToken(OAuth2RefreshToken::class.java)
+        val refreshToken: OAuth2Authorization.Token<OAuth2RefreshToken>? = authorization.getToken(OAuth2RefreshToken::class.java)
 //            ?: throw IllegalArgumentException("Invalid refresh token")
 
-        val oidcIdToken: OAuth2Authorization.Token<OidcIdToken>? = this.getToken(OidcIdToken::class.java)
+        val oidcIdToken: OAuth2Authorization.Token<OidcIdToken>? = authorization.getToken(OidcIdToken::class.java)
 //            ?: throw IllegalArgumentException("Invalid OIDC ID token")
 
-        val userCode: OAuth2Authorization.Token<OAuth2UserCode>? = this.getToken(OAuth2UserCode::class.java)
+        val userCode: OAuth2Authorization.Token<OAuth2UserCode>? = authorization.getToken(OAuth2UserCode::class.java)
 //            ?: throw IllegalArgumentException("Invalid user code")
 
-        val deviceCode: OAuth2Authorization.Token<OAuth2DeviceCode>? = this.getToken(OAuth2DeviceCode::class.java)
+        val deviceCode: OAuth2Authorization.Token<OAuth2DeviceCode>? = authorization.getToken(OAuth2DeviceCode::class.java)
 //            ?: throw IllegalArgumentException("Invalid device code")
 
 
         return Authorization(
-            id                         = this.id,
-            registeredClientId         = this.registeredClientId,
-            principalName              = this.principalName,
-            authorizationGrantType     = this.authorizationGrantType.value,
-            attributes                 = objectMapper.writeValueAsString(this.attributes),
-            state                      = this.getAttribute(OAuth2ParameterNames.STATE),
+            id                         = authorization.id,
+            registeredClientId         = authorization.registeredClientId,
+            principalName              = authorization.principalName,
+            authorizationGrantType     = authorization.authorizationGrantType.value,
+            attributes                 = objectMapper.writeValueAsString(authorization.attributes),
+            state                      = authorization.getAttribute(OAuth2ParameterNames.STATE),
             authorizationCodeValue     = authorizationCode?.token?.tokenValue,
             authorizationCodeIssuedAt  = authorizationCode?.token?.issuedAt,
             authorizationCodeExpiresAt = authorizationCode?.token?.expiresAt,
             authorizationCodeMetadata  = authorizationCode?.metadata?.let { objectMapper.writeValueAsString(it) },
+            authorizedScopes           = authorization.authorizedScopes?.joinToString(","),
             accessTokenValue           = accessToken?.token?.tokenValue,
             accessTokenIssuedAt        = accessToken?.token?.issuedAt,
             accessTokenExpiresAt       = accessToken?.token?.expiresAt,
             accessTokenMetadata        = accessToken?.metadata?.let { objectMapper.writeValueAsString(it) },
+            accessTokenScopes          = accessToken?.token?.scopes?.joinToString(","),
             refreshTokenValue          = refreshToken?.token?.tokenValue,
             refreshTokenIssuedAt       = refreshToken?.token?.issuedAt,
             refreshTokenExpiresAt      = refreshToken?.token?.expiresAt,
@@ -103,6 +105,7 @@ class CustomOAuth2AuthorizationService(
             oidcIdTokenIssuedAt        = oidcIdToken?.token?.issuedAt,
             oidcIdTokenExpiresAt       = oidcIdToken?.token?.expiresAt,
             oidcIdTokenMetadata        = oidcIdToken?.metadata?.let { objectMapper.writeValueAsString(it) },
+            oidcIdTokenClaims          = oidcIdToken?.token?.claims?.let { objectMapper.writeValueAsString(it) },
             userCodeValue              = userCode?.token?.tokenValue,
             userCodeIssuedAt           = userCode?.token?.issuedAt,
             userCodeExpiresAt          = userCode?.token?.expiresAt,
@@ -149,7 +152,8 @@ class CustomOAuth2AuthorizationService(
                 OAuth2AccessToken.TokenType.BEARER,
                 this.accessTokenValue,
                 this.accessTokenIssuedAt,
-                this.accessTokenExpiresAt
+                this.accessTokenExpiresAt,
+                this.accessTokenScopes?.split(",")?.toSet()
             )
             builder.token(accessToken) {
                 it.putAll(objectMapper.readValue(this.accessTokenMetadata, object : TypeReference<Map<String, Any>>(){}))

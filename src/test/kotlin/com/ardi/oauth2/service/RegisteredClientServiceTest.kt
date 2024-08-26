@@ -48,12 +48,13 @@ class RegisteredClientServiceTest {
             .clientSecretExpiresAt(Instant.now().plus(Duration.ofDays(30)))
             .clientAuthenticationMethods {
                 it.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                it.add(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                it.add(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
             }
             .authorizationGrantTypes {
                 it.add(AuthorizationGrantType.AUTHORIZATION_CODE)
-                it.add(AuthorizationGrantType.REFRESH_TOKEN)
                 it.add(AuthorizationGrantType.JWT_BEARER)
+                it.add(AuthorizationGrantType.JWT_BEARER)
+
             }
             .redirectUris {
                 it.add("http://localhost:3000/api/auth/callback/ardi")

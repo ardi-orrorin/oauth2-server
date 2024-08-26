@@ -1,6 +1,7 @@
 package com.ardi.oauth2.service
 
 import com.ardi.oauth2.Repository.AuthorizationConsentRepository
+import com.ardi.oauth2.Repository.ClientRepository
 import com.ardi.oauth2.entity.AuthorizationConsent
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.dao.DataRetrievalFailureException
@@ -18,7 +19,7 @@ import org.springframework.util.Assert
 @Component
 class CustomOAuth2AuthorizationConsentService(
     private val authorizationConsentRepository: AuthorizationConsentRepository,
-    private val registeredClientRepository: RegisteredClientRepository,
+    private val clientRepository: ClientRepository,
 ): OAuth2AuthorizationConsentService {
 
     override fun save(authorizationConsent: OAuth2AuthorizationConsent?) {
@@ -41,9 +42,27 @@ class CustomOAuth2AuthorizationConsentService(
         return authorizationConsent.toDto()
     }
 
+    fun generateConsent(registeredClientId: String, principalName: String): OAuth2AuthorizationConsent {
+
+        val authorizationConsent = this.findById(registeredClientId, principalName)
+
+        if(authorizationConsent != null) {
+            return authorizationConsent
+        }
+
+
+        val newAuthorizationConsent = OAuth2AuthorizationConsent.withId(registeredClientId, principalName)
+            .authorities({ it.addAll(setOf(GrantedAuthority { "ROLE_USER" })) })
+            .build()
+
+        this.save(newAuthorizationConsent)
+
+        return newAuthorizationConsent
+    }
+
     fun AuthorizationConsent.toDto(): OAuth2AuthorizationConsent {
 
-        registeredClientRepository.findByClientId(this.registeredClientId)
+        clientRepository.findById(this.registeredClientId)
             ?: throw DataRetrievalFailureException("Invalid registeredClientId: ${this.registeredClientId}")
 
         val authorities = this.authorities.split(",")

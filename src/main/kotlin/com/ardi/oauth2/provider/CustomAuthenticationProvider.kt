@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.server.authorization.token.DefaultOAu
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext
 import org.springframework.stereotype.Component
 
+
 //@Component
 class CustomAuthenticationProvider(
     private val clientService: RegisteredClientService,
