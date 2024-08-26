@@ -65,7 +65,7 @@ class CustomOAuth2AuthorizationService(
 //            ?: throw IllegalArgumentException("Invalid authorization code")
 
         val accessToken: OAuth2Authorization.Token<OAuth2AccessToken>? = authorization.getToken(OAuth2AccessToken::class.java)
-            ?: throw IllegalArgumentException("Invalid access token")
+//            ?: throw IllegalArgumentException("Invalid access token")
 
         val refreshToken: OAuth2Authorization.Token<OAuth2RefreshToken>? = authorization.getToken(OAuth2RefreshToken::class.java)
 //            ?: throw IllegalArgumentException("Invalid refresh token")

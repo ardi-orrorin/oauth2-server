@@ -65,7 +65,7 @@ class AuthorizationServerConfig {
                 }
             }
             .authorizationEndpoint {
-                it.consentPage("/consent")
+                it.consentPage("/oauth2/consent")
             }
 
         http.exceptionHandling { exceptions ->

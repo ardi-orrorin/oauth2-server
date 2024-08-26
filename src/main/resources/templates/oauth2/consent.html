@@ -49,6 +49,7 @@
           margin-bottom: 20px;
       }
       .scope-item {
+          font-size: 0.8rem;
           margin-bottom: 10px;
           display: flex;
           align-items: center;
@@ -140,9 +141,7 @@
       <input type="hidden" name="redirect_uri" th:value="${redirectUri}">
       <ul class="scopes-list">
         <li class="scope-item" th:each="scope : ${scopes}">
-          <input type="checkbox" th:id="${'scope-' + scope.value}" th:name="scope.value"
-                 th:value="${scope.value}"
-          >
+          <input type="hidden" th:name="scope.value" th:value="${scope.value}">
           <label th:for="${'scope-' + scope.value}" th:text="${scope.description}">Scope</label>
         </li>
       </ul>

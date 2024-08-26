@@ -42,7 +42,7 @@ class CustomOAuth2AuthorizationConsentService(
         return authorizationConsent.toDto()
     }
 
-    fun generateConsent(registeredClientId: String, principalName: String): OAuth2AuthorizationConsent {
+    fun generateConsent(registeredClientId: String, scopes: Set<String>, principalName: String): OAuth2AuthorizationConsent {
 
         val authorizationConsent = this.findById(registeredClientId, principalName)
 
@@ -50,9 +50,11 @@ class CustomOAuth2AuthorizationConsentService(
             return authorizationConsent
         }
 
+        val authorities = scopes.map { GrantedAuthority{ "SCOPE_$it" } }
+            .toSet()
 
         val newAuthorizationConsent = OAuth2AuthorizationConsent.withId(registeredClientId, principalName)
-            .authorities({ it.addAll(setOf(GrantedAuthority { "ROLE_USER" })) })
+            .authorities{ it.addAll(authorities) }
             .build()
 
         this.save(newAuthorizationConsent)

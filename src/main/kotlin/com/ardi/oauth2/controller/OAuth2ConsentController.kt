@@ -19,7 +19,7 @@ class OAuth2ConsentController(
     private val clientService: RegisteredClientService,
     private val consentService: CustomOAuth2AuthorizationConsentService
 ) {
-    @GetMapping("/consent")
+    @GetMapping("/oauth2/consent")
     fun showConsentPage(
         model: Model,
         @AuthenticationPrincipal principal: UserDetailsDto,
@@ -29,23 +29,25 @@ class OAuth2ConsentController(
     ): String {
         val client: RegisteredClient = clientService.findByClientId(clientId)
 
-        consentService.generateConsent(client.id, principal.username)
 
-        val scopes = scope.split(" ")
+        val scopes = scope.split(" ").toSet()
+        consentService.generateConsent(client.id, scopes, principal.username)
+
+        val scopesAttr = scope.split(" ")
             .map { CustomScopeEnum.entries.first { scope -> scope.value == it } }
             .toSet()
 
 
         model.addAttribute("clientId", clientId)
         model.addAttribute("clientName", client.clientName)
-        model.addAttribute("scopes", scopes)
+        model.addAttribute("scopes", scopesAttr)
         model.addAttribute("state", state)
 
-        return "consent"
+        return "oauth2/consent"
     }
 
-    @GetMapping("/regist/client")
+    @GetMapping("/oauth2/client")
     fun showClientRegistrationPage(model: Model): String {
-        return "regist/client"
+        return "oauth2/client"
     }
 }

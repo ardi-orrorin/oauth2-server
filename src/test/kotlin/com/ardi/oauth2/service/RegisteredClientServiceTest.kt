@@ -37,9 +37,6 @@ class RegisteredClientServiceTest {
         val clientId = BCryptPasswordEncoder().encode("anamensis" + UUID.randomUUID().toString())
         val clientSecret = BCryptPasswordEncoder().encode(clientId + UUID.randomUUID().toString())
 
-        println("clientId: $clientId")
-        println("clientSecret: $clientSecret")
-
         val client = RegisteredClient.withId(UUID.randomUUID().toString())
             .clientName(clientName)
             .clientId("anamensis-client")
@@ -48,12 +45,9 @@ class RegisteredClientServiceTest {
             .clientSecretExpiresAt(Instant.now().plus(Duration.ofDays(30)))
             .clientAuthenticationMethods {
                 it.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                it.add(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
             }
             .authorizationGrantTypes {
                 it.add(AuthorizationGrantType.AUTHORIZATION_CODE)
-                it.add(AuthorizationGrantType.JWT_BEARER)
-                it.add(AuthorizationGrantType.JWT_BEARER)
 
             }
             .redirectUris {
