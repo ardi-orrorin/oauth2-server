@@ -1,6 +1,7 @@
 package com.ardi.oauth2.config
 
 import com.ardi.oauth2.dto.UserDetailsDto
+import com.ardi.oauth2.entity.Users
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,6 +20,7 @@ class BeanConfig {
     fun objectMapper() = ObjectMapper().apply {
         registerModules(SecurityJackson2Modules.getModules(this::class.java.classLoader))
         addMixIn(HashMap::class.java, UserDetailsDto::class.java)
+        addMixIn(HashMap::class.java, Users::class.java)
         registerModule(OAuth2AuthorizationServerJackson2Module())
     }
 

@@ -43,7 +43,7 @@ class UserClientServiceTest {
 //
 //
 //        val client = clientRepository.findByClientId("anamensis-client") ?: throw Exception("Client not found")
-        println("client: $client")
+//        println("client: $client")
 //
 //        val userClient = UserClient(
 //            users = users.toDto().toEntity(),

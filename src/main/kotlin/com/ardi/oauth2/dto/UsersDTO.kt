@@ -1,6 +1,8 @@
 package com.ardi.oauth2.dto
 
+import com.ardi.oauth2.entity.UserRole
 import com.ardi.oauth2.entity.Users
+import org.springframework.security.core.GrantedAuthority
 import java.time.LocalDateTime
 
 data class UsersDTO (
@@ -27,6 +29,8 @@ data class UsersDTO (
     val createdAt: LocalDateTime? = null,
 
     val updatedAt: LocalDateTime? = null,
+
+    val roles: List<GrantedAuthority> = mutableListOf()
 ) {
     fun toEntity() = Users(
         id            = this.id,
@@ -41,5 +45,6 @@ data class UsersDTO (
         profileImage  = this.profileImage,
         createdAt     = this.createdAt ?: LocalDateTime.now(),
         updatedAt     = this.updatedAt ?: LocalDateTime.now(),
+        roles         = this.roles.map { UserRole(role = it.authority) }
     )
 }

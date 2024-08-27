@@ -63,3 +63,9 @@ CREATE TABLE user_clients (
     registered_client_id            VARCHAR(255) NOT NULL,
     PRIMARY KEY (user_id, registered_client_id)
 );
+
+CREATE TABLE user_roles (
+    user_id                         int8         NOT NULL,
+    role                            VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id, role)
+);

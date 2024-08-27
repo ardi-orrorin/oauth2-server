@@ -89,6 +89,8 @@ class AuthorizationServerConfig {
         http.authorizeHttpRequests {
             it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/consent", "/oauth2/**").permitAll()
             it.requestMatchers("/" ).authenticated()
+            it.requestMatchers("/client/**").hasAuthority("ROLE_admin")
+
             it.anyRequest().authenticated()
 
         }

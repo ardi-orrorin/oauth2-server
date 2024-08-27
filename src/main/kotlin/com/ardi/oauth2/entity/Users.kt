@@ -2,6 +2,7 @@ package com.ardi.oauth2.entity
 
 import com.ardi.oauth2.dto.UserDetailsDto
 import com.ardi.oauth2.dto.UsersDTO
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
@@ -53,15 +54,21 @@ class Users(
     @Column(name = "updated_at", nullable = false)
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 
+    @OneToMany(mappedBy = "userId", cascade = [CascadeType.PERSIST] , fetch = FetchType.EAGER)
+    val roles: List<UserRole> = mutableListOf()
 ) {
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
-    val userClient: List<UserClient> = mutableListOf()
 
-    fun toUserDetails() = UserDetailsDto(
-        id = id,
-        userId = userId,
-        pwd = pwd,
-    )
+    fun toUserDetails(): UserDetailsDto {
+        val user = UserDetailsDto(
+            id = id,
+            userId = userId,
+            pwd = pwd,
+        )
+        user.authorities = roles.map { it.role }.toMutableList()
+        val new = user.copy()
+
+        return new
+    }
 
     fun toDto() = UsersDTO (
         id            = id,
@@ -76,10 +83,11 @@ class Users(
         profileImage  = profileImage,
         createdAt     = createdAt,
         updatedAt     = updatedAt,
+        roles         = roles.map { GrantedAuthority { it.role } }.toMutableList()
     )
 
     override fun toString(): String {
-        return "Users(id=$id, userId='$userId', pwd='$pwd', email='$email', name='$name', birthDay=$birthDay, phone=$phone, address=$address, detailAddress=$detailAddress, profileImage=$profileImage, createdAt=$createdAt, updatedAt=$updatedAt, userClient=$userClient)"
+        return "Users(id=$id, userId='$userId', pwd='$pwd', email='$email', name='$name', birthDay=$birthDay, phone=$phone, address=$address, detailAddress=$detailAddress, profileImage=$profileImage, createdAt=$createdAt, updatedAt=$updatedAt, roles=$roles)"
     }
 
 }

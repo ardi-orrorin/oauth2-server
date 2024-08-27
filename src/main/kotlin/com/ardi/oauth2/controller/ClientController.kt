@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
-@RequestMapping("/oauth2/client")
+@RequestMapping("/client")
 class ClientController(
     private val clientService: RegisteredClientService
 ) {
@@ -18,12 +18,12 @@ class ClientController(
     fun getClientList(model: Model): String {
 
         model.addAttribute("clients", clientService.findAll())
-        return "oauth2/client/list"
+        return "client/list"
     }
 
     @GetMapping("/registration")
     fun getClientRegistration(model: Model): String {
-        return "oauth2/client/regist"
+        return "client/regist"
     }
 
     @PostMapping("/registration")
@@ -34,6 +34,6 @@ class ClientController(
         clientService.save(request)
 
 
-        return "oauth2/client/regist"
+        return "client/regist"
     }
 }
