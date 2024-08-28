@@ -1,7 +1,10 @@
 package com.ardi.oauth2.controller
 
+import com.ardi.oauth2.dto.UserDetailsDto
 import com.ardi.oauth2.dto.request.RegisteredClientRequest
+import com.ardi.oauth2.service.ClientInfosService
 import com.ardi.oauth2.service.RegisteredClientService
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,13 +14,25 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @RequestMapping("/client")
 class ClientController(
-    private val clientService: RegisteredClientService
+    private val clientService: RegisteredClientService,
+    private val clientInfosService: ClientInfosService,
 ) {
 
     @GetMapping("list")
-    fun getClientList(model: Model): String {
+    fun getClientList(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        model: Model,
+    ): String {
 
-        model.addAttribute("clients", clientService.findAll())
+        val client = clientService.findAllToDto()
+        val clientInfos = clientInfosService.findAllByUserId(principal.username)
+
+        client.map {
+            val clientInfo = clientInfos.find { info -> info.clientId == it.clientId }
+            it.clientSecret = clientInfo?.clientSecret ?: ""
+        }
+
+        model.addAttribute("clients", client)
         return "client/list"
     }
 
@@ -28,11 +43,11 @@ class ClientController(
 
     @PostMapping("/registration")
     fun postClientRegistration(
+        @AuthenticationPrincipal principal: UserDetailsDto,
         request: RegisteredClientRequest.Create
     ): String {
 
-        clientService.save(request)
-
+        clientService.save(request, principal.username)
 
         return "client/regist"
     }

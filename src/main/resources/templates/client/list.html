@@ -171,6 +171,7 @@
       <li class="client-item" th:each="client : ${clients}">
         <h2 class="client-name" th:text="${client.clientName}">클라이언트 이름</h2>
         <p class="client-details" th:text="'클라이언트 ID: ' + ${client.clientId}">클라이언트 ID: example_id</p>
+        <p class="client-details" th:text="'클라이언트 시크릿: ' + ${client.clientSecret}">클라이언트 시크릿: example_secret</p>
         <p class="client-details" th:text="'리다이렉트 URI: ' + ${client.redirectUris}">리다이렉트 URI: http://example.com/callback</p>
         <p class="client-details">
           스코프:

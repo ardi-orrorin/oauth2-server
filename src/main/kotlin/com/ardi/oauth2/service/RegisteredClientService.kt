@@ -1,8 +1,12 @@
 package com.ardi.oauth2.service
 
+import com.ardi.oauth2.Repository.ClientInfosRepository
 import com.ardi.oauth2.Repository.ClientRepository
+import com.ardi.oauth2.dto.ClientDto
+import com.ardi.oauth2.dto.ClientInfosDto
 import com.ardi.oauth2.dto.request.RegisteredClientRequest
 import com.ardi.oauth2.entity.Client
+import com.ardi.oauth2.entity.ClientInfos
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -27,6 +31,7 @@ import java.util.UUID
 @Component
 final class RegisteredClientService (
     private val clientRepository: ClientRepository,
+    private val clientInfosRepository: ClientInfosRepository,
     private val objectMapper: ObjectMapper,
     private val passwordEncoder: PasswordEncoder,
 ): RegisteredClientRepository {
@@ -37,12 +42,13 @@ final class RegisteredClientService (
         clientRepository.save(registeredClient!!.toEntity())
     }
 
-    fun save(registeredClient: RegisteredClientRequest.Create) {
+    fun save(registeredClient: RegisteredClientRequest.Create, userId: String) {
 
+        val registeredClientId = UUID.randomUUID().toString()
         val secert = passwordEncoder.encode(UUID.randomUUID().toString())
 
         val client = RegisteredClient
-            .withId(UUID.randomUUID().toString())
+            .withId(registeredClientId)
             .clientIdIssuedAt(Instant.now())
             .clientName(registeredClient.clientName)
             .clientId(registeredClient.clientName)
@@ -65,13 +71,24 @@ final class RegisteredClientService (
             .build()
 
         clientRepository.save(client.toEntity())
+
+        val clientInfos = ClientInfos(
+            userId = userId,
+            registeredClientId = registeredClientId,
+            clientId = registeredClient.clientName,
+            clientSecret = secert,
+            createdAt = Instant.now(),
+        )
+
+        clientInfosRepository.save(clientInfos)
+
     }
 
         override fun findById(id: String?): RegisteredClient {
         Assert.notNull(id, "id cannot be null")
         val client = clientRepository.findById(id!!)
             .orElseThrow { IllegalArgumentException("Invalid id: $id") }
-        return client.toDto()
+        return client.toRegisteredClient()
 
     }
 
@@ -80,11 +97,16 @@ final class RegisteredClientService (
         val client = clientRepository.findByClientId(clientId!!)
             ?: throw IllegalArgumentException("Invalid clientId: $clientId")
 
-        return client.toDto()
+        return client.toRegisteredClient()
     }
 
     fun findAll(): List<RegisteredClient> {
-        return clientRepository.findAll().map { it.toDto() }
+        return clientRepository.findAll().map { it.toRegisteredClient() }
+    }
+
+    fun findAllToDto(): List<ClientDto> {
+        return clientRepository.findAll()
+            .map { it.toDto() }
     }
 
 
@@ -109,7 +131,7 @@ final class RegisteredClientService (
         )
     }
 
-    private final fun Client.toDto(): RegisteredClient {
+    private final fun Client.toRegisteredClient(): RegisteredClient {
         val methods = this.clientAuthenticationMethods.split(",")
             .map { ClientAuthenticationMethod(it) }
             .toSet()

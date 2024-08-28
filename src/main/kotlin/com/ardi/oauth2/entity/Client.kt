@@ -1,5 +1,6 @@
 package com.ardi.oauth2.entity
 
+import com.ardi.oauth2.dto.ClientDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -28,7 +29,7 @@ class Client(
 
     @field:Size(max = 255)
     @field:Column(name = "client_secret", nullable = false)
-    val clientSecret: String,
+    var clientSecret: String,
 
     @field:Column(name = "client_secret_expires_at")
     val clientSecretExpiresAt: LocalDateTime? = null,
@@ -50,7 +51,7 @@ class Client(
 
     @field:Size(max = 1000)
     @field:Column(name = "redirect_uris", length = 1000)
-    val redirectUris: String,
+    var redirectUris: String,
 
     @field:Size(max = 1000)
     @field:Column(name = "post_logout_redirect_uris", length = 1000)
@@ -59,7 +60,7 @@ class Client(
     @field:Size(max = 1000)
     @field:NotNull
     @field:Column(name = "scopes", nullable = false, length = 1000)
-    val scopes: String,
+    var scopes: String,
 
     @field:Size(max = 2000)
     @field:NotNull
@@ -78,4 +79,20 @@ class Client(
     override fun toString(): String {
         return "Client(id='$id', clientId='$clientId', clientIdIssuedAt=$clientIdIssuedAt, clientSecret='$clientSecret', clientSecretExpiresAt=$clientSecretExpiresAt, clientName='$clientName', clientAuthenticationMethods='$clientAuthenticationMethods', authorizationGrantTypes='$authorizationGrantTypes', redirectUris='$redirectUris', postLogoutRedirectUris=$postLogoutRedirectUris, scopes='$scopes', clientSettings='$clientSettings', tokenSettings='$tokenSettings')"
     }
+
+    fun toDto() = ClientDto(
+        id = this.id,
+        clientId = this.clientId,
+        clientIdIssuedAt = this.clientIdIssuedAt,
+        clientSecret = this.clientSecret,
+        clientSecretExpiresAt = this.clientSecretExpiresAt,
+        clientName = this.clientName,
+        clientAuthenticationMethods = this.clientAuthenticationMethods,
+        authorizationGrantTypes = this.authorizationGrantTypes,
+        redirectUris = this.redirectUris,
+        postLogoutRedirectUris = this.postLogoutRedirectUris,
+        scopes = this.scopes,
+        clientSettings = this.clientSettings,
+        tokenSettings = this.tokenSettings,
+    )
 }
