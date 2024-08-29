@@ -7,7 +7,9 @@ import com.ardi.oauth2.service.RegisteredClientService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
@@ -36,6 +38,18 @@ class ClientController(
         return "client/list"
     }
 
+    @DeleteMapping("/delete/{clientId}")
+    fun deleteClient(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        @PathVariable clientId: String,
+        model: Model,
+    ): String {
+
+        clientService.delete(clientId, principal.username)
+
+        return "client/list"
+    }
+
     @GetMapping("/registration")
     fun getClientRegistration(model: Model): String {
         return "client/regist"
@@ -47,8 +61,17 @@ class ClientController(
         request: RegisteredClientRequest.Create
     ): String {
 
+        val addScope = request.scopes.contains("openid").run {
+            if(!this) request.scopes.plus("openid")
+            else request.scopes
+        }
+
+        request.scopes = addScope
+
         clientService.save(request, principal.username)
 
-        return "client/regist"
+        return "redirect:/client/list"
     }
+
+
 }

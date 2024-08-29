@@ -61,7 +61,7 @@ final class RegisteredClientService (
                 it.add(AuthorizationGrantType.AUTHORIZATION_CODE)
             }
             .redirectUris { it.add(registeredClient.redirectUri) }
-//            .scopes { it.addAll(registeredClient.scopes) }
+            .scopes { it.addAll(registeredClient.scopes) }
             .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
             .tokenSettings(TokenSettings.builder()
                 .refreshTokenTimeToLive(Duration.ofDays(30))
@@ -84,7 +84,7 @@ final class RegisteredClientService (
 
     }
 
-        override fun findById(id: String?): RegisteredClient {
+    override fun findById(id: String?): RegisteredClient {
         Assert.notNull(id, "id cannot be null")
         val client = clientRepository.findById(id!!)
             .orElseThrow { IllegalArgumentException("Invalid id: $id") }
@@ -107,6 +107,18 @@ final class RegisteredClientService (
     fun findAllToDto(): List<ClientDto> {
         return clientRepository.findAll()
             .map { it.toDto() }
+    }
+
+    fun delete(clientId: String, username: String) {
+
+        val client = clientRepository.findByClientId(clientId)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        val clientInfos =  clientInfosRepository.findByUserIdAndRegisteredClientId(username, client.id)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        clientInfosRepository.delete(clientInfos)
+        clientRepository.delete(client)
     }
 
 

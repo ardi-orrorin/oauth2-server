@@ -191,7 +191,7 @@
   <footer class="footer">
     <div class="footer-links">
       <a href="https://github.com/ardi-orrorin">GITHUB</a>
-s    </div>
+    </div>
     <div class="copyright">
       &copy; 2024 Ardi Service. All rights reserved.
     </div>
@@ -216,10 +216,21 @@ s    </div>
 
   const deleteButtons = document.querySelectorAll('.delete-button');
   deleteButtons.forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', async function() {
       const clientId = this.getAttribute('data-client-id');
+
       if (confirm('정말로 이 클라이언트를 삭제하시겠습니까?')) {
-        alert('클라이언트 삭제: ' + clientId);
+        await fetch('/client/delete/' + clientId, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('클라이언트가 성공적으로 삭제되었습니다.');
+            window.location.reload();
+          } else {
+            alert('클라이언트 삭제 중 오류가 발생했습니다.');
+          }
+        })
       }
     });
   });
