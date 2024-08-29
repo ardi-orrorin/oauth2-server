@@ -6,6 +6,6 @@ class RegisteredClientRequest{
     data class Create(
         @RequestParam val clientName: String,
         @RequestParam val redirectUri: String,
-        @RequestParam var scopes: Set<String> = setOf("openid"),
+        @RequestParam val scopes: MutableSet<String> = mutableSetOf("openid"),
     ) {}
 }

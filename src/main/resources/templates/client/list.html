@@ -181,8 +181,7 @@
           </span>
         </p>
         <div class="client-actions">
-          <button class="action-button view-button" th:data-client-id="${client.clientId}">상세 보기</button>
-          <button class="action-button edit-button" th:data-client-id="${client.clientId}">수정</button>
+          <a class="action-button view-button" th:href="'/client/detail/' + ${client.clientId}">상세 보기</a>
           <button class="action-button delete-button" th:data-client-id="${client.clientId}">삭제</button>
         </div>
       </li>
@@ -198,22 +197,6 @@
   </footer>
 </div>
 <script>
-  const viewButtons = document.querySelectorAll('.view-button');
-  viewButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const clientId = this.getAttribute('data-client-id');
-      alert('클라이언트 상세 보기: ' + clientId);
-    });
-  });
-
-  const editButtons = document.querySelectorAll('.edit-button');
-  editButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const clientId = this.getAttribute('data-client-id');
-      alert('클라이언트 수정: ' + clientId);
-    });
-  });
-
   const deleteButtons = document.querySelectorAll('.delete-button');
   deleteButtons.forEach(button => {
     button.addEventListener('click', async function() {

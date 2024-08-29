@@ -5,6 +5,7 @@ import com.ardi.oauth2.Repository.ClientRepository
 import com.ardi.oauth2.dto.ClientDto
 import com.ardi.oauth2.dto.ClientInfosDto
 import com.ardi.oauth2.dto.request.RegisteredClientRequest
+import com.ardi.oauth2.dto.response.RegisteredClientResponse
 import com.ardi.oauth2.entity.Client
 import com.ardi.oauth2.entity.ClientInfos
 import com.fasterxml.jackson.core.type.TypeReference
@@ -100,6 +101,22 @@ final class RegisteredClientService (
         return client.toRegisteredClient()
     }
 
+    fun findInfoByClientId(clientId: String): RegisteredClientResponse.Info {
+        val client = clientRepository.findByClientId(clientId)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        val clientInfos = clientInfosRepository.findByClientId(clientId)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        return RegisteredClientResponse.Info(
+            clientId     = client.clientId,
+            clientName   = client.clientName,
+            clientSecret = clientInfos.clientSecret,
+            redirectUris = client.redirectUris,
+            scopes       = client.scopes.split(",").toMutableSet(),
+        )
+    }
+
     fun findAll(): List<RegisteredClient> {
         return clientRepository.findAll().map { it.toRegisteredClient() }
     }
@@ -119,6 +136,37 @@ final class RegisteredClientService (
 
         clientInfosRepository.delete(clientInfos)
         clientRepository.delete(client)
+    }
+
+    fun update(clientId: String, username: String, request: RegisteredClientRequest.Create) {
+
+        val clientInfos = clientInfosRepository.findByClientIdAndUserId(clientId, username)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        val client = clientRepository.findByClientId(clientId)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        client.clientName = request.clientName
+        client.redirectUris = request.redirectUri
+        client.scopes = request.scopes.joinToString(",")
+
+        clientRepository.save(client)
+    }
+
+    fun resetClientSecret(clientId: String, username: String) {
+        val clientInfos = clientInfosRepository.findByClientIdAndUserId(clientId, username)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        val client = clientRepository.findByClientId(clientId)
+            ?: throw IllegalArgumentException("Invalid clientId: $clientId")
+
+        val secert = passwordEncoder.encode(UUID.randomUUID().toString())
+
+        client.clientSecret = secert
+        clientInfos.clientSecret = secert
+
+        clientRepository.save(client)
+        clientInfosRepository.save(clientInfos)
     }
 
 
@@ -173,4 +221,6 @@ final class RegisteredClientService (
             .tokenSettings(TokenSettings.withSettings(tokenSettings).build())
             .build()
     }
+
+
 }

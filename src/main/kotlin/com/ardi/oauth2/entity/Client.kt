@@ -37,7 +37,7 @@ class Client(
     @field:Size(max = 255)
     @field:NotNull
     @field:Column(name = "client_name", nullable = false)
-    val clientName: String,
+    var clientName: String,
 
     @field:Size(max = 1000)
     @field:NotNull

@@ -11,6 +11,8 @@ interface ClientInfosRepository: JpaRepository<ClientInfos, Long> {
 
     fun findAllByUserId(userId: String): List<ClientInfos>
 
+    fun findByClientIdAndUserId(clientId: String, userId: String): ClientInfos?
+
     fun findByUserIdAndRegisteredClientId(userId: String, registeredClientId: String): ClientInfos?
 
 }

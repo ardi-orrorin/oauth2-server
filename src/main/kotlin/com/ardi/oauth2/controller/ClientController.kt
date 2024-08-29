@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
@@ -38,6 +39,45 @@ class ClientController(
         return "client/list"
     }
 
+    @GetMapping("/detail/{clientId}")
+    fun getClientDetail(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        @PathVariable clientId: String,
+        model: Model,
+    ): String {
+
+        val client = clientService.findInfoByClientId(clientId)
+
+        model.addAttribute("client", client)
+
+        return "client/detail"
+    }
+
+    @GetMapping("/reset-secret/{clientId}")
+    fun resetClientSecret(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        @PathVariable clientId: String,
+        model: Model,
+    ): String {
+
+        clientService.resetClientSecret(clientId, principal.username)
+
+        return "redirect:/client/detail/$clientId"
+    }
+
+    @PutMapping("/detail/{clientId}")
+    fun putClientDetail(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        @PathVariable clientId: String,
+        request: RegisteredClientRequest.Create,
+        model: Model,
+    ): String {
+
+        clientService.update(clientId, principal.username, request)
+
+        return "redirect:/client/list"
+    }
+
     @DeleteMapping("/delete/{clientId}")
     fun deleteClient(
         @AuthenticationPrincipal principal: UserDetailsDto,
@@ -61,12 +101,9 @@ class ClientController(
         request: RegisteredClientRequest.Create
     ): String {
 
-        val addScope = request.scopes.contains("openid").run {
-            if(!this) request.scopes.plus("openid")
-            else request.scopes
+        request.scopes.contains("openid").let {
+            if(!it) request.scopes.add("openid")
         }
-
-        request.scopes = addScope
 
         clientService.save(request, principal.username)
 

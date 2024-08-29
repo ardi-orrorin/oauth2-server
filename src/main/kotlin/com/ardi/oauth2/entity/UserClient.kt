@@ -9,7 +9,7 @@ data class UserClient(
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id", )
+    @JoinColumn(name = "user_id")
     val users: Users,
 
     @Id
