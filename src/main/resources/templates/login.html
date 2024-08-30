@@ -38,6 +38,7 @@
     </div>
   </div>
 </div>
+<script th:src="@{/js/background.js}"></script>
 <script>
   const dotsContainer = document.querySelector('.floating-dots');
   for (let i = 0; i < 20; i++) {
@@ -47,14 +48,6 @@
     dot.style.top = `${Math.random() * 100}%`;
     dotsContainer.appendChild(dot);
   }
-
-  const shapes = document.querySelectorAll('.shape');
-  shapes.forEach(shape => {
-    setInterval(() => {
-      const randomRotation = Math.random() * 360;
-      shape.style.transform = `rotate(${randomRotation}deg)`;
-    }, 5000 + Math.random() * 5000);
-  });
 </script>
 </body>
 </html>

@@ -6,11 +6,6 @@ import jakarta.validation.constraints.Size
 
 
 class UserRequest {
-   data class Login (
-        val username: String,
-        val password: String
-    ){}
-
     data class Signup(
         @field:Size(min = 4, message = "User ID must be between 4 and 16 characters")
         val userId  : String,

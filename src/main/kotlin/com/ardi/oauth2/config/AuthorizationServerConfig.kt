@@ -87,7 +87,7 @@ class AuthorizationServerConfig {
     ): SecurityFilterChain? {
 
         http.authorizeHttpRequests {
-            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/consent", "/oauth2/**").permitAll()
+            it.requestMatchers("/login**", "/signup**", "/error", "/logout", "/css/**", "/js/**", "/consent", "/oauth2/**").permitAll()
             it.anyRequest().authenticated()
 
         }
