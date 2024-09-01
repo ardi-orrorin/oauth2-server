@@ -4,6 +4,8 @@ import com.ardi.oauth2.dto.UserDetailsDto
 import com.ardi.oauth2.dto.request.RegisteredClientRequest
 import com.ardi.oauth2.service.ClientInfosService
 import com.ardi.oauth2.service.RegisteredClientService
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -22,10 +24,10 @@ class ClientController(
 ) {
 
     @GetMapping("list")
-    fun getClientList(
+    suspend fun getClientList(
         @AuthenticationPrincipal principal: UserDetailsDto,
         model: Model,
-    ): String {
+    ): String = coroutineScope {
 
         val client = clientService.findAllToDto()
         val clientInfos = clientInfosService.findAllByUserId(principal.username)
@@ -36,70 +38,45 @@ class ClientController(
         }
 
         model.addAttribute("clients", client)
-        return "client/list"
+        "client/list"
     }
 
     @GetMapping("/detail/{clientId}")
-    fun getClientDetail(
+    suspend fun getClientDetail(
         @AuthenticationPrincipal principal: UserDetailsDto,
         @PathVariable clientId: String,
         model: Model,
-    ): String {
+    ): String = coroutineScope {
 
         val client = clientService.findInfoByClientId(clientId)
 
         model.addAttribute("client", client)
 
-        return "client/detail"
+        "client/detail"
     }
 
     @GetMapping("/reset-secret/{clientId}")
-    fun resetClientSecret(
+    suspend fun resetClientSecret(
         @AuthenticationPrincipal principal: UserDetailsDto,
         @PathVariable clientId: String,
         model: Model,
-    ): String {
+    ): String = runBlocking {
 
         clientService.resetClientSecret(clientId, principal.username)
 
-        return "redirect:/client/detail/$clientId"
-    }
-
-    @PutMapping("/detail/{clientId}")
-    fun putClientDetail(
-        @AuthenticationPrincipal principal: UserDetailsDto,
-        @PathVariable clientId: String,
-        request: RegisteredClientRequest.Create,
-        model: Model,
-    ): String {
-
-        clientService.update(clientId, principal.username, request)
-
-        return "redirect:/client/list"
-    }
-
-    @DeleteMapping("/delete/{clientId}")
-    fun deleteClient(
-        @AuthenticationPrincipal principal: UserDetailsDto,
-        @PathVariable clientId: String,
-        model: Model,
-    ): String {
-
-        clientService.delete(clientId, principal.username)
-
-        return "client/list"
+        "redirect:/client/detail/$clientId"
     }
 
     @GetMapping("/registration")
-    fun getClientRegistration(model: Model): String {
-        return "client/regist"
+    suspend fun getClientRegistration(model: Model): String = coroutineScope {
+        "client/regist"
     }
 
     @PostMapping("/registration")
-    fun postClientRegistration(
+    suspend fun postClientRegistration(
         @AuthenticationPrincipal principal: UserDetailsDto,
         request: RegisteredClientRequest.Create
-    ): String {
+    ): String = runBlocking {
 
         request.scopes.contains("openid").let {
             if(!it) request.scopes.add("openid")
@@ -107,8 +84,32 @@ class ClientController(
 
         clientService.save(request, principal.username)
 
-        return "redirect:/client/list"
+        "redirect:/client/list"
     }
 
+    @PutMapping("/detail/{clientId}")
+    suspend fun putClientDetail(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        @PathVariable clientId: String,
+        request: RegisteredClientRequest.Create,
+        model: Model,
+    ): String = coroutineScope {
+
+        clientService.update(clientId, principal.username, request)
+
+        "redirect:/client/list"
+    }
+
+    @DeleteMapping("/delete/{clientId}")
+    suspend fun deleteClient(
+        @AuthenticationPrincipal principal: UserDetailsDto,
+        @PathVariable clientId: String,
+        model: Model,
+    ): String = coroutineScope {
+
+        clientService.delete(clientId, principal.username)
+
+        "client/list"
+    }
 
 }

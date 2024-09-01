@@ -5,6 +5,8 @@ import com.ardi.oauth2.dto.UserDetailsDto
 import com.ardi.oauth2.dto.request.RegisteredClientRequest
 import com.ardi.oauth2.service.CustomOAuth2AuthorizationConsentService
 import com.ardi.oauth2.service.RegisteredClientService
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
@@ -23,13 +25,13 @@ class OAuth2ConsentController(
     private val consentService: CustomOAuth2AuthorizationConsentService
 ) {
     @GetMapping("/oauth2/consent")
-    fun showConsentPage(
+    suspend fun showConsentPage(
         model: Model,
         @AuthenticationPrincipal principal: UserDetailsDto,
         @RequestParam(OAuth2ParameterNames.CLIENT_ID) clientId: String,
         @RequestParam(OAuth2ParameterNames.SCOPE) scope: String,
         @RequestParam(OAuth2ParameterNames.STATE) state: String
-    ): String {
+    ): String = coroutineScope {
         val client: RegisteredClient = clientService.findByClientId(clientId)
 
 
@@ -46,7 +48,7 @@ class OAuth2ConsentController(
         model.addAttribute("scopes", scopesAttr)
         model.addAttribute("state", state)
 
-        return "oauth2/consent"
+        "oauth2/consent"
     }
 
 }

@@ -2,6 +2,7 @@ package com.ardi.oauth2.service
 
 import com.ardi.oauth2.Repository.UsersRepository
 import com.ardi.oauth2.dto.UsersDTO
+import kotlinx.coroutines.supervisorScope
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -25,15 +26,15 @@ final class UserService(
         return userDetails
     }
 
-    suspend fun existByUserId(userId: String): Boolean {
-        return usersRepository.existsByUserId(userId)
+    suspend fun existByUserId(userId: String): Boolean = supervisorScope {
+        usersRepository.existsByUserId(userId)
     }
 
-    suspend fun existByEmail(email: String): Boolean {
-        return usersRepository.existsByEmail(email)
+    suspend fun existByEmail(email: String): Boolean = supervisorScope {
+        usersRepository.existsByEmail(email)
     }
 
-    suspend fun save(usersDto: UsersDTO): UsersDTO {
+    suspend fun save(usersDto: UsersDTO): UsersDTO = supervisorScope {
 
         val encodedPassword = passwordEncoder.encode(usersDto.pwd)
         val newUsersDto = UsersDTO(
@@ -45,6 +46,6 @@ final class UserService(
 
         val users = usersRepository.save(newUsersDto.toEntity())
 
-        return users.toDto()
+        users.toDto()
     }
 }

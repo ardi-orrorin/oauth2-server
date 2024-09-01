@@ -2,6 +2,7 @@ package com.ardi.oauth2.controller
 
 import jakarta.servlet.RequestDispatcher
 import jakarta.servlet.http.HttpServletRequest
+import kotlinx.coroutines.runBlocking
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
@@ -12,8 +13,9 @@ import java.util.*
 
 @Controller
 class CustomErrorController: ErrorController {
+
     @RequestMapping("/error")
-    fun handleError(request: HttpServletRequest, model: Model): String? {
+    suspend fun handleError(request: HttpServletRequest, model: Model): String? = runBlocking {
 
         val status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
         if (status != null) {
@@ -30,10 +32,7 @@ class CustomErrorController: ErrorController {
         if (message != null && !message.toString().isEmpty()) {
             model.addAttribute("message", message)
         }
-        return "error"
-    }
 
-    fun getErrorPath(): String? {
-        return "/error"
+        "error"
     }
 }
