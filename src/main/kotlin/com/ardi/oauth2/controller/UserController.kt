@@ -15,37 +15,52 @@ class UserController(
     val userService: UserService
 ) {
     @GetMapping("/")
-    suspend fun index(): String = coroutineScope {
+    suspend fun index(): String = supervisorScope {
         "index"
     }
 
     @GetMapping("/login")
-    suspend fun login(): String = coroutineScope{
+    suspend fun login(): String = supervisorScope{
         "login"
     }
 
     @GetMapping("/signup")
-    suspend fun signup(): String = coroutineScope {
+    suspend fun signup(): String = supervisorScope {
         "signup"
     }
 
     @PostMapping("/signup")
-    suspend fun save(@ModelAttribute @Valid signup: UserRequest.Signup, model: Model): String = coroutineScope {
+    suspend fun save(@ModelAttribute @Valid signup: UserRequest.Signup, model: Model): String = supervisorScope {
 
-        if(userService.existByUserId(signup.userId)) {
-            model.addAttribute("validation", "Id already exist")
-            return@coroutineScope  "signup"
+        val existUserId = async {
+            println("existUserId")
+            if(userService.existByUserId(signup.userId)) {
+                model.addAttribute("validation", "Id already exist")
+                return@async true
+            }
+            return@async false
         }
 
-
-        if(signup.pwd != signup.rePwd) {
-            model.addAttribute("validation", "Password not match")
-            return@coroutineScope  "signup"
+        val notEvalPwd = async {
+            println("notEvalPwd")
+            if(signup.pwd != signup.rePwd) {
+                model.addAttribute("validation", "Password not match")
+                return@async true
+            }
+            return@async false
         }
 
-        if(userService.existByEmail(signup.email)) {
-            model.addAttribute("validation", "Email already exist")
-            return@coroutineScope  "signup"
+        val existEmail = async {
+            println("existEmail")
+            if(userService.existByEmail(signup.email)) {
+                model.addAttribute("validation", "Email already exist")
+                return@async true
+            }
+            return@async false
+        }
+
+        if(notEvalPwd.await() || existUserId.await() ||  existEmail.await()) {
+            return@supervisorScope "signup"
         }
 
         userService.save(signup.toDto())

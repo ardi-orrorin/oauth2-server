@@ -32,8 +32,7 @@ class OAuth2ConsentController(
         @RequestParam(OAuth2ParameterNames.SCOPE) scope: String,
         @RequestParam(OAuth2ParameterNames.STATE) state: String
     ): String = coroutineScope {
-        val client: RegisteredClient = clientService.findByClientId(clientId)
-
+        val client: RegisteredClient =  clientService.findByClientId(clientId)
 
         val scopes = scope.split(" ").toSet()
         consentService.generateConsent(client.id, scopes, principal.username)
